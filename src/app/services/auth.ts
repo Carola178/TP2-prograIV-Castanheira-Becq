@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
@@ -73,3 +74,18 @@ export class Auth {
 //     return !!this.getToken();
 //   }
 }
+=======
+import { Injectable } from '@angular/core';
+
+@Injectable({
+    providedIn: 'root'
+    })
+    export class Auth {
+
+    
+        signIn(email: string, password: string) {
+        return ({ email, password });
+    }
+
+    }
+>>>>>>> a23f3385b44bba962aa190d0da3f0329cc68b5f8

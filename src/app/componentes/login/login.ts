@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { Auth } from '../../services/auth';
 import { Router, RouterLink } from '@angular/router';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -10,7 +10,7 @@ import { passwordValidator } from '../../validators/login-validator';
   styleUrl: './login.css',
   templateUrl: './login.html',
 })
-export class Login {
+export class Login implements OnInit {
   isModalOpen = signal<boolean>(false);
   modalMensaje = signal<string>('');
 
@@ -29,6 +29,8 @@ export class Login {
   });
 
   constructor(private auth: Auth, private router: Router) {}
+
+  ngOnInit(): void {}
 
   get identifierControl() {
     return this.loginModel.controls.identifier;
