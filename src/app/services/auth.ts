@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
@@ -17,7 +16,7 @@ export class Auth {
   private http = inject(HttpClient);
   private router = inject(Router);
 
-  private apiUrl = `${environment.apiUrl}/auth`; // Asegúrate de tener apiUrl en tu environment (ej: http://localhost:3000/api)
+  private apiUrl = 'http://localhost:3000/api/auth'; // Reemplazá con tu entorno si ya lo configuraste
 
   // Manejo reactivo del estado de autenticación basado en el token JWT / localStorage
   private currentUserSubject = new BehaviorSubject<any>(this.getStoredUser());
@@ -49,7 +48,7 @@ export class Auth {
   signUp(datosRegistro: {
     nombre: string;
     apellido: string;
-    identifier: string; // Puede ser email o username según tu modelo en Mongo
+    identifier: string; // Puede ser email o username según tu modelo
     password: string;
     [key: string]: any;
   }): Observable<any> {
@@ -63,29 +62,4 @@ export class Auth {
     this.currentUserSubject.next(null);
     this.router.navigate(['/login']);
   }
-
-//   // Obtener el token JWT actual para los interceptores HTTP
-//   getToken(): string | null {
-//     return localStorage.getItem('token');
-//   }
-
-//   // Verificar si está autenticado
-//   estaAutenticado(): boolean {
-//     return !!this.getToken();
-//   }
 }
-=======
-import { Injectable } from '@angular/core';
-
-@Injectable({
-    providedIn: 'root'
-    })
-    export class Auth {
-
-    
-        signIn(email: string, password: string) {
-        return ({ email, password });
-    }
-
-    }
->>>>>>> a23f3385b44bba962aa190d0da3f0329cc68b5f8
