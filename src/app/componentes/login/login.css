@@ -1,0 +1,164 @@
+.login-container {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(135deg, var(--bg-light) 0%, var(--bg-main) 100%);
+    padding: 1rem;
+}
+
+.login-card {
+    background-color: var(--card-bg);
+    padding: 2.5rem 2rem;
+    border-radius: 16px;
+    box-shadow: 0 10px 25px rgba(140, 130, 234, 0.15);
+    border: 1px solid var(--border-color);
+    width: 100%;
+    max-width: 420px;
+}
+
+.login-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.login-logo {
+    width: 64px;
+    height: 64px;
+    margin-bottom: 0.5rem;
+}
+
+.login-header h2 {
+    margin: 0;
+    color: var(--primary-color);
+    font-size: 1.6rem;
+}
+
+.login-header p {
+    margin-top: 0.5rem;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+.error-banner {
+    background-color: #F8D7DA;
+    color: #721C24;
+    padding: 0.75rem;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    margin-bottom: 1.2rem;
+    border: 1px solid #F5C6CB;
+    text-align: center;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 1.2rem;
+}
+
+.form-group label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 0.4rem;
+    color: var(--text-dark);
+}
+
+.form-group input {
+    padding: 0.75rem 1rem;
+    border: 1.5px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 0.95rem;
+    outline: none;
+    transition: border-color 0.2s ease;
+}
+
+.form-group input:focus {
+    border-color: var(--primary-color);
+}
+
+.texto-error {
+    color: var(--error-color);
+    font-size: 0.78rem;
+    margin-top: 0.3rem;
+}
+
+.button-group {
+    display: flex;
+    gap: 0.8rem;
+    margin-top: 1.5rem;
+}
+
+.btn-primary {
+    flex: 1;
+    padding: 0.85rem;
+    background-color: var(--accent-orange);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.btn-primary:hover:not(:disabled) {
+    background-color: var(--accent-orange-hover);
+}
+
+.btn-primary:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.btn-secondary {
+    padding: 0.85rem 1rem;
+    background-color: transparent;
+    color: var(--text-muted);
+    border: 1.5px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-secondary:hover {
+    background-color: var(--bg-main);
+    color: var(--text-dark);
+}
+
+
+
+.divisor {
+    border: none;
+    border-top: 1px solid var(--border-color);
+    margin: 1.5rem 0 1rem 0;
+}
+
+
+.registro-link-container {
+    text-align: center;
+    font-size: 0.9rem;
+}
+
+.texto-pregunta {
+    margin: 0 0 0.3rem 0;
+    color: var(--text-muted);
+}
+
+.registro-link-container a {
+    color: var(--primary-color);
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer; /* Fuerza a que aparezca la manito */
+    display: inline-block;
+    transition: transform 0.15s ease, color 0.15s ease;
+}
+
+.registro-link-container a:hover {
+    color: var(--primary-hover); 
+    text-decoration: underline;
+    transform: translateY(-1px); 
+}
+

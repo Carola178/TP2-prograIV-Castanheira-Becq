@@ -66,10 +66,10 @@ export class Login implements OnInit {
     const { identifier, password } = this.loginModel.getRawValue();
     const resultado = await this.auth.signIn(identifier, password);
 
-    if (resultado.error) {
-      this.mostrarModal('Las credenciales son incorrectas. Intentelo nuevamente.');
-      return;
-    }
+    // if (resultado.error) {
+    //   this.mostrarModal('Las credenciales son incorrectas. Intentelo nuevamente.');
+    //   return;
+    // }
 
     this.router.navigate(['/publicaciones']);
   }
