@@ -1,46 +1,60 @@
 <div class="login-container">
     <div class="login-card">
         <div class="login-header">
-        <img src="logo.png" alt="Patitas al refugio" class="login-logo">
-        <h2>Patitas al Refugio</h2>
-        <p>Ingresá con tu correo o nombre de usuario</p>
+            <img src="logo.png" alt="Patitas al refugio" class="login-logo">
+            <h2>Patitas al Refugio</h2>
+            <p>Ingresá con tu correo o nombre de usuario</p>
         </div>
-
-        <!-- @if (errorMessage()) {
-        <div class="error-banner">
-            {{ errorMessage() }}
-        </div>
-        } -->
 
         <form class="login-form" [formGroup]="loginModel" (ngSubmit)="onSubmit($event)">
-        <div class="form-group">
-            <label for="identifier">Usuario o Correo Electrónico</label>
-            <input type="text" id="email" formControlName="email" placeholder="usuario o correo@ejemplo.com">            
-            <!-- @if (loginModel.controls.email.touched && loginModel.controls.email.invalid) {
-            <small class="texto-error">Ingresa un usuario o correo válido.</small>
-            } -->
-        </div>
+            <div class="form-group">
+                <label for="email">Usuario o Correo Electrónico</label>
+                <input type="text" id="email" formControlName="email" placeholder="usuario o correo@ejemplo.com">            
+            </div>
 
-        <div class="form-group">
-            <label for="password">Contraseña</label>
-            <input type="password" id="password" formControlName="password" placeholder="••••••••">
-            
-            @if (loginModel.controls.password.touched && loginModel.controls.password.invalid) {
-            <small class="texto-error">La contraseña no es válida. </small>
-            }
-        </div>
+            <div class="form-group">
+                <label for="password">Contraseña</label>
+                <input type="password" id="password" formControlName="password" placeholder="••••••••">
+                
+                @if (loginModel.controls.password.touched && loginModel.controls.password.invalid) {
+                    <small class="texto-error">La contraseña no es válida.</small>
+                }
+            </div>
 
-        <div class="button-group">
-            <button type="submit" class="btn-primary" [disabled]="!loginModel.valid">Ingresar</button>
-            <!-- <button type="button" class="btn-secondary" (click)="errorMessage.set(null)">Limpiar</button> -->
-        </div>
+            <div class="button-group">
+                <button type="submit" class="btn-primary" [disabled]="!loginModel.valid">Ingresar</button>
+            </div>
         </form>
 
         <hr class="divisor" />
 
         <div class="registro-link-container">
-        <p class="texto-pregunta">¿No tenés cuenta aún?</p>
-        <a routerLink="/registro">Registrate</a>
+            <p class="texto-pregunta">¿No tenés cuenta aún?</p>
+            <a routerLink="/registro">Registrate</a>
         </div>
     </div>
 </div>
+
+<!-- Modal Dinámico de Alertas / Éxito -->
+@if (isModalOpen()) {
+<div class="modal fade show" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content shadow-lg border-0">
+            <div class="modal-header text-white" [class.bg-success]="loginExitoso" [class.bg-danger]="!loginExitoso">
+                <h5 class="modal-title">{{ loginExitoso ? '¡Bienvenido!' : 'Atención' }}</h5>
+            </div>
+            <div class="modal-body py-4 text-center">
+                <p class="fs-5 mb-0">{{ modalMensaje() }}</p>
+            </div>
+            <div class="modal-footer justify-content-center">
+                <button type="button" class="btn btn-primary px-4" (click)="cerrarModal()">
+                    {{ loginExitoso ? 'Ir a Publicaciones' : 'Aceptar' }}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Fondo oscuro difuminado detrás del modal -->
+<div class="modal-backdrop fade show"></div>
+}

@@ -1,4 +1,5 @@
-import { Controller, Post, Body, Res, Get, Param, UseGuards } from '@nestjs/common';
+import { Controller, Post, Body, Res, Get, Param, UseGuards, UseInterceptors, UploadedFile } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { AutenticacionService } from './autenticacion.service.js';
 import { CrearUsuarioDto } from './dto/create-usuario.dto.js';
 import { LoginDto } from './dto/login.dto.js';
@@ -10,14 +11,20 @@ export class AutenticacionController {
     constructor(private readonly autenticacionService: AutenticacionService) {}
 
     @Post('registro')
-    async create(
-        @Body() crearAuthDto: CrearUsuarioDto,
-        @Res({ passthrough: true }) res: Response
-    ) {
-        const result = await this.autenticacionService.registrar(crearAuthDto);
-        this.autenticacionService.setTokenCookie(res, result.token);
-        return result;
-    }
+        @UseInterceptors(FileInterceptor('imagenPerfil'))
+        async create(
+            @Body() crearAuthDto: CrearUsuarioDto,
+            @UploadedFile() file: any,
+            @Res({ passthrough: true }) res: Response
+        ) {
+            if (file) {
+                crearAuthDto.imagenPerfil = file.filename; 
+            }
+
+            const result = await this.autenticacionService.registrar(crearAuthDto);
+            this.autenticacionService.setTokenCookie(res, result.token);
+            return result;
+        }
 
     @Post('login')
     async login(

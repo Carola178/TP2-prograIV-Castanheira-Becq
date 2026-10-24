@@ -149,3 +149,66 @@
     text-decoration: underline;
     transform: translateY(-1px);
 }
+
+
+/* ==========================================
+  ESTILOS DEL MODAL (CENTRADO Y BOTÓN UNIFICADO)
+   ========================================== */
+.modal.fade.show {
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1050;
+}
+
+.modal-dialog {
+  margin: auto;
+  max-width: 400px;
+  width: 90%;
+}
+
+.modal-content {
+  border-radius: 12px;
+  border: none;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  background-color: #ffffff;
+  padding: 10px;
+  text-align: center;
+}
+
+.modal-header {
+  border-bottom: none;
+  justify-content: center;
+  padding-bottom: 0;
+}
+
+.modal-body {
+  padding: 20px 0;
+}
+
+.modal-footer {
+  border-top: none;
+  display: flex;
+  justify-content: center;
+  padding-top: 0;
+}
+
+.modal-footer .btn-primary {
+  background-color: #c97d35;
+  border-color: #c97d35;
+  color: #ffffff;
+  padding: 10px 24px;
+  border-radius: 8px;
+  font-weight: 500;
+  width: auto;
+}
+
+.modal-footer .btn-primary:hover {
+  background-color: #b06a2e;
+}

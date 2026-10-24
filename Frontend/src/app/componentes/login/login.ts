@@ -1,21 +1,23 @@
-import { Component, OnInit, signal } from '@angular/core';
-import { Auth } from '../../services/auth';
+import { Component, OnInit, signal, ChangeDetectorRef } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { ReactiveFormsModule, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Auth } from '../../services/auth';
 import { passwordValidator } from '../../validators/login-validator';
-import { firstValueFrom } from 'rxjs';
 
 @Component({
-  imports: [RouterLink, ReactiveFormsModule],
   selector: 'app-login',
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule, RouterLink],
   styleUrl: './login.css',
   templateUrl: './login.html',
 })
 export class Login implements OnInit {
   isModalOpen = signal<boolean>(false);
   modalMensaje = signal<string>('');
+  loginExitoso = false;
 
-loginModel = new FormGroup({
+  loginModel = new FormGroup({
     email: new FormControl('', {
       nonNullable: true,
       validators: [Validators.required, Validators.minLength(3)]
@@ -29,44 +31,52 @@ loginModel = new FormGroup({
     })
   });
 
-  constructor(private auth: Auth, private router: Router) {}
+  constructor(
+    private auth: Auth, 
+    private router: Router,
+    private cdr: ChangeDetectorRef // <-- Inyectamos el detector de cambios
+  ) {}
 
   ngOnInit(): void {}
 
-  get identifierControl() {
-    return this.loginModel.controls.email;
-  }
-
-  get passwordControl() {
-    return this.loginModel.controls.password;
-  }
-
-  private mostrarModal(mensaje: string): void {
-    this.modalMensaje.set(mensaje);
-    this.isModalOpen.set(true);
-  }
-
   cerrarModal(): void {
-    this.isModalOpen.set(false);
-  }
-
-  async onSubmit(event: Event) {
-  event.preventDefault();
-
-  if (this.loginModel.invalid) {
-    this.loginModel.markAllAsTouched();
-    this.mostrarModal('Por favor, completa los campos correctamente.');
-    return;
-  }
-
-  try {
-    const { email, password } = this.loginModel.getRawValue();
-    await firstValueFrom(this.auth.login(email, password));
-    
-    this.router.navigate(['/publicaciones']);
-  } catch (error: any) {
-    console.error('Error en el login', error);
-    this.mostrarModal('Las credenciales son incorrectas. Inténtelo nuevamente.');
+      const wasSuccessful = this.loginExitoso;
+      this.isModalOpen.set(false);
+      
+      if (wasSuccessful) {
+        this.router.navigate(['/publicaciones']);
+      }
     }
+
+  onSubmit(event: Event) {
+    event.preventDefault();
+
+    if (this.loginModel.invalid) {
+      this.loginModel.markAllAsTouched();
+      this.loginExitoso = false;
+      this.modalMensaje.set('Por favor, completa los campos correctamente.');
+      this.isModalOpen.set(true);
+      this.cdr.detectChanges();
+      return;
+    }
+
+    const { email, password } = this.loginModel.getRawValue();
+    
+    this.auth.login(email, password).subscribe({
+      next: (response) => {
+        console.log('Login exitoso:', response);
+        this.loginExitoso = true;
+        this.modalMensaje.set('¡Has iniciado sesión correctamente!');
+        this.isModalOpen.set(true);
+        this.cdr.detectChanges(); // <-- Forzamos a Angular a pintar el modal inmediatamente
+      },
+      error: (error) => {
+        console.error('Error en el login', error);
+        this.loginExitoso = false;
+        this.modalMensaje.set('Las credenciales son incorrectas. Inténtelo nuevamente.');
+        this.isModalOpen.set(true);
+        this.cdr.detectChanges(); // <-- Forzamos a pintar el modal de error
+      }
+    });
   }
 }

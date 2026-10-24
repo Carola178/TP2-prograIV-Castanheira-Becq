@@ -17,44 +17,52 @@ export class AutenticacionService {
     ) {}
 
     async login(loginAuthDto: LoginDto) {
-        const user = await this.usuarioModel.findOne({ email: loginAuthDto.email });
+            const user = await this.usuarioModel.findOne({
+                $or: [
+                    { email: loginAuthDto.email },
+                    { nombreUsuario: loginAuthDto.email }
+                ]
+            });
 
-        // Verificamos con el PasswordHasher del paquete del profesor
-        const isPasswordValid = user ? await this.passwordHasher.verify(loginAuthDto.contrasena, user.contrasena) : false;
+            const isPasswordValid = user ? await this.passwordHasher.verify(loginAuthDto.contrasena, user.contrasena) : false;
 
-        if (!user || !isPasswordValid) {
-            throw new UnauthorizedException('Credenciales incorrectas. Intente nuevamente');
+            if (!user || !isPasswordValid) {
+                throw new UnauthorizedException('Credenciales incorrectas. Intente nuevamente');
+            }
+
+            return this.generateToken(user);
         }
-
-        return this.generateToken(user);
-    }
 
     async registrar(createAuthDto: CrearUsuarioDto) {
-        const existeUsuario = await this.usuarioModel.findOne({
-            $or: [{ email: createAuthDto.email }, { nombreUsuario: createAuthDto.nombreUsuario }]
-        });
+            if (!createAuthDto.email || !createAuthDto.nombreUsuario) {
+                throw new BadRequestException('Faltan datos obligatorios en el registro.');
+            }
 
-        if (existeUsuario) {
-            throw new BadRequestException('El correo o el nombre de usuario ya se encuentran registrados.');
+            const existeUsuario = await this.usuarioModel.findOne({
+                $or: [
+                    { email: createAuthDto.email }, 
+                    { nombreUsuario: createAuthDto.nombreUsuario }
+                ]
+            });
+
+            if (existeUsuario) {
+                throw new BadRequestException('El correo o el nombre de usuario ya se encuentran registrados.');
+            }
+
+            const hashedPassword = await this.passwordHasher.hash(createAuthDto.contrasena);
+
+            const nuevoUsuarioData = {
+                ...createAuthDto,
+                contrasena: hashedPassword,
+                perfil: createAuthDto.perfil || 'usuario', 
+            };
+
+            const nuevoUsuario = await this.usuarioModel.create(nuevoUsuarioData);
+            if (!nuevoUsuario) {
+                throw new InternalServerErrorException('No se pudo crear el usuario.');
+            }
+            return this.generateToken(nuevoUsuario);
         }
-
-        // Hasheamos la contraseña con el PasswordHasher
-        const hashedPassword = await this.passwordHasher.hash(createAuthDto.contrasena);
-
-        const nuevoUsuarioData = {
-            ...createAuthDto,
-            contrasena: hashedPassword,
-            perfil: createAuthDto.perfil || 'usuario', // Por defecto 'usuario'
-        };
-
-        const nuevoUsuario = await this.usuarioModel.create(nuevoUsuarioData);
-
-        if (!nuevoUsuario) {
-            throw new InternalServerErrorException('No se pudo crear el usuario.');
-        }
-
-        return this.generateToken(nuevoUsuario);
-    }
 
     async getPerfil(id: string) {
         const user = await this.usuarioModel.findById(id).select('-contrasena');

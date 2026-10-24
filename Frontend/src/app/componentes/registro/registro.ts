@@ -1,4 +1,4 @@
-import { Component, signal, inject } from '@angular/core';
+import { Component, signal, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
@@ -16,9 +16,11 @@ export class Registro {
   private fb = inject(FormBuilder);
   private router = inject(Router);
   private authService = inject(Auth);
+  private cdr = inject(ChangeDetectorRef);
 
   registroModel: FormGroup;
-  errorMessage = signal<string | null>(null); 
+  errorMessage = signal<string | null>(null);
+  mostrarModal = signal<boolean>(false); // Usamos signal para asegurar la reactividad del modal
 
   constructor() {
     this.registroModel = this.fb.group({
@@ -29,7 +31,7 @@ export class Registro {
       fechaNacimiento: ['', [Validators.required]],
       descripcionBreve: [''],
       imagenPerfil: [''], 
-      contrasena: [              
+      contrasena: [          
         '', 
         [
           Validators.required, 
@@ -37,7 +39,7 @@ export class Registro {
           Validators.pattern(/^(?=.*[A-Z])(?=.*\d).+$/)
         ]
       ],
-      repetirContrasena: ['', [Validators.required]] // Coincide con el DTO del backend
+      repetirContrasena: ['', [Validators.required]] 
     }, {
       validators: this.passwordMatchValidator
     });
@@ -56,7 +58,7 @@ export class Registro {
     }
   }
 
-  async onSubmit(event: Event) {
+  onSubmit(event: Event) {
     event.preventDefault();
     
     if (this.registroModel.invalid) {
@@ -64,14 +66,34 @@ export class Registro {
       return;
     }
 
-    try {
-      const datosFormulario = this.registroModel.value;
-      await firstValueFrom(this.authService.registro(datosFormulario));
-      
-      this.router.navigate(['/login']);
-    } catch (error: any) {
-      console.error('Error en el registro', error);
-      this.errorMessage.set('Ocurrió un error al registrarse. Verificá los datos.');
-    }
+    const valores = { ...this.registroModel.value };
+    const imagenFile = valores.imagenPerfil; 
+    delete valores.imagenPerfil;
+
+    this.authService.registro(valores, imagenFile).subscribe({
+      next: (response: any) => {
+        console.log('Registro exitoso, abriendo modal...');
+        
+        if (response && response.token) {
+          localStorage.setItem('token', response.token);
+          if (response.usuario) {
+            localStorage.setItem('user', JSON.stringify(response.usuario));
+          }
+        }
+
+        this.mostrarModal.set(true);
+      },
+      error: (error: any) => {
+        console.error('Error en el registro:', error);
+        this.errorMessage.set('Ocurrió un error al registrarse. Verificá los datos.');
+      }
+    });
+  }
+
+  irAlFeed() {
+    this.mostrarModal.set(false);
+    setTimeout(() => {
+      this.router.navigate(['/publicaciones']);
+    }, 50);
   }
 }

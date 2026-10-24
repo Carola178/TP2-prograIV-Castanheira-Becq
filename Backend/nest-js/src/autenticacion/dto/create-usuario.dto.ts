@@ -20,7 +20,8 @@ export class CrearUsuarioDto {
     contrasena: string;
 
     @IsString()
-    repetirContrasena: string;
+    @IsOptional() 
+        repetirContrasena?: string;
 
     @IsDateString({}, { message: 'La fecha de nacimiento debe tener un formato válido' })
     fechaNacimiento: string;

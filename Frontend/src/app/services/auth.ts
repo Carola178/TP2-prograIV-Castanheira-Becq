@@ -42,20 +42,21 @@ export class Auth {
     );
   }
 
-  registro(datosRegistro: {
-    nombre: string;
-    apellido: string;
-    email: string;
-    nombreUsuario: string;
-    contrasena: string;
-    repetirContrasena: string;
-    fechaNacimiento: string;
-    descripcionBreve?: string;
-    imagenPerfil?: string;
-    perfil?: string;
-  }): Observable<any> {
-    return this.http.post(`${this.apiUrl}/registro`, datosRegistro);
-  }
+  registro(datosRegistro: any, imagenFile?: File): Observable<any> {
+      const formData = new FormData();
+
+      for (const key in datosRegistro) {
+        if (datosRegistro[key] !== undefined && datosRegistro[key] !== null) {
+          formData.append(key, datosRegistro[key]);
+        }
+      }
+
+      if (imagenFile) {
+        formData.append('imagenPerfil', imagenFile);
+      }
+
+      return this.http.post(`${this.apiUrl}/registro`, formData);
+    }
 
   cerrarSesion(): void {
     localStorage.removeItem('token');

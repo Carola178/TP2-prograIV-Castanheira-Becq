@@ -10,7 +10,7 @@ export const routes: Routes = [
         loadComponent: () => import('./componentes/registro/registro').then(m => m.Registro)
     },
     {
-        path: 'cartelera',
+        path: 'publicaciones',
         loadComponent: () => import('./componentes/publicaciones/publicaciones').then(m => m.Publicaciones)
     },
     {
