@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
-// import { environment } from '../../enviroments/enviroment'; 
+import { environment } from '../../environments/environment'; 
 
 export interface AuthResponse {
   access_token: string;
@@ -16,7 +16,7 @@ export class Auth {
   private http = inject(HttpClient);
   private router = inject(Router);
 
-  private apiUrl = 'http://localhost:3000/autenticacion';
+  private apiUrl = `${environment.apiUrl}/autenticacion`;
 
   private currentUserSubject = new BehaviorSubject<any>(this.getStoredUser());
   public currentUser$: Observable<any> = this.currentUserSubject.asObservable();
