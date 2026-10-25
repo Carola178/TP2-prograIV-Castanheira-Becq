@@ -34,7 +34,7 @@ export class Login implements OnInit {
   constructor(
     private auth: Auth, 
     private router: Router,
-    private cdr: ChangeDetectorRef // <-- Inyectamos el detector de cambios
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {}
@@ -68,14 +68,14 @@ export class Login implements OnInit {
         this.loginExitoso = true;
         this.modalMensaje.set('¡Has iniciado sesión correctamente!');
         this.isModalOpen.set(true);
-        this.cdr.detectChanges(); // <-- Forzamos a Angular a pintar el modal inmediatamente
+        this.cdr.detectChanges(); 
       },
       error: (error) => {
         console.error('Error en el login', error);
         this.loginExitoso = false;
         this.modalMensaje.set('Las credenciales son incorrectas. Inténtelo nuevamente.');
         this.isModalOpen.set(true);
-        this.cdr.detectChanges(); // <-- Forzamos a pintar el modal de error
+        this.cdr.detectChanges(); 
       }
     });
   }

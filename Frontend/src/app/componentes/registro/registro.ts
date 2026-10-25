@@ -2,7 +2,6 @@ import { Component, signal, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { firstValueFrom } from 'rxjs';
 import { Auth } from '../../services/auth'; 
 
 @Component({
@@ -20,7 +19,7 @@ export class Registro {
 
   registroModel: FormGroup;
   errorMessage = signal<string | null>(null);
-  mostrarModal = signal<boolean>(false); // Usamos signal para asegurar la reactividad del modal
+  mostrarModal = signal<boolean>(false); 
 
   constructor() {
     this.registroModel = this.fb.group({

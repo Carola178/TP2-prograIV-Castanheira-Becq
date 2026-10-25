@@ -32,7 +32,7 @@ export class CrearUsuarioDto {
 
     @IsOptional()
     @IsString({ message: 'La imagen de perfil debe ser una ruta válida' })
-    imagenPerfil?: string; // Se llena en el servicio tras procesar el archivo
+    imagenPerfil?: string; 
 
     @IsOptional()
     @IsIn(['usuario', 'administrador'], { message: 'El perfil debe ser usuario o administrador' })
