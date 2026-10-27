@@ -74,7 +74,7 @@ export class AutenticacionService {
 
     async generateToken(usuario: UsuarioDocument) {
         const payload = { email: usuario.email, sub: usuario._id, perfil: usuario.perfil };
-        const token = await this.jwtService.signAsync(payload);
+        const token = await this.jwtService.signAsync(payload, { expiresIn: '15m' });
         return { token, usuario };
     }
 
