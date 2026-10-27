@@ -5,19 +5,16 @@
     --accent-orange: #F39343;      
     --accent-orange-hover: #E07F2E;
 
-  /*Fondos */
     --bg-main: #F8F7F;           
     --card-bg: #FFFFFF;            
     --text-dark: #2D3142;          
     --text-muted: #6C757D;         
     --border-color: #E2DFFA;      
 
-  /* Estados */
     --error-color: #DC3545;        
     --success-color: #28A745;
 }
 
-/* Reset básico y fondo */
 body {
     margin: 0;
     padding: 0;

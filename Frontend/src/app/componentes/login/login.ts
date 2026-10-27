@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { Auth } from '../../services/auth';
-import { passwordValidator } from '../../validators/login-validator';
 
 @Component({
   selector: 'app-login',
@@ -16,25 +15,18 @@ export class Login implements OnInit {
   isModalOpen = signal<boolean>(false);
   modalMensaje = signal<string>('');
   loginExitoso = false;
+  verContrasena = false;
 
   loginModel = new FormGroup({
-    email: new FormControl('', {
-      nonNullable: true,
-      validators: [Validators.required, Validators.minLength(3)]
-    }),
-    password: new FormControl('', {
-      nonNullable: true,
-      validators: [
-        Validators.required,
-        passwordValidator() 
-      ]
-    })
+    email: new FormControl('', {nonNullable: true, validators: [Validators.required, Validators.minLength(3), Validators.maxLength(40), Validators.email]}),
+
+    password: new FormControl('', {nonNullable: true, validators: [Validators.required, Validators.minLength(8), Validators.maxLength(20)]})
   });
 
   constructor(
     private auth: Auth, 
     private router: Router,
-    private cdr: ChangeDetectorRef // <-- Inyectamos el detector de cambios
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {}
@@ -68,14 +60,14 @@ export class Login implements OnInit {
         this.loginExitoso = true;
         this.modalMensaje.set('¡Has iniciado sesión correctamente!');
         this.isModalOpen.set(true);
-        this.cdr.detectChanges(); // <-- Forzamos a Angular a pintar el modal inmediatamente
+        this.cdr.detectChanges(); 
       },
       error: (error) => {
         console.error('Error en el login', error);
         this.loginExitoso = false;
         this.modalMensaje.set('Las credenciales son incorrectas. Inténtelo nuevamente.');
         this.isModalOpen.set(true);
-        this.cdr.detectChanges(); // <-- Forzamos a pintar el modal de error
+        this.cdr.detectChanges(); 
       }
     });
   }
