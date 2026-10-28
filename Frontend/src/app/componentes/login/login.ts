@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { Auth } from '../../services/auth';
-import { passwordValidator } from '../../validators/login-validator';
 
 @Component({
   selector: 'app-login',
@@ -16,19 +15,12 @@ export class Login implements OnInit {
   isModalOpen = signal<boolean>(false);
   modalMensaje = signal<string>('');
   loginExitoso = false;
+  verContrasena = false;
 
   loginModel = new FormGroup({
-    email: new FormControl('', {
-      nonNullable: true,
-      validators: [Validators.required, Validators.minLength(3)]
-    }),
-    password: new FormControl('', {
-      nonNullable: true,
-      validators: [
-        Validators.required,
-        passwordValidator() 
-      ]
-    })
+    email: new FormControl('', {nonNullable: true, validators: [Validators.required, Validators.minLength(3), Validators.maxLength(40), Validators.email]}),
+
+    password: new FormControl('', {nonNullable: true, validators: [Validators.required, Validators.minLength(8), Validators.maxLength(20)]})
   });
 
   constructor(

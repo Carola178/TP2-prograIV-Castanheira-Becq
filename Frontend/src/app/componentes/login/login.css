@@ -122,24 +122,52 @@
   text-decoration: underline;
 }
 
+.password-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.password-container input {
+  width: 100%;
+  padding-right: 45px; 
+}
+
+.btn-toggle-password {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
 .modal.fade.show {
   display: flex !important;
-  align-items: center;
-  justify-content: center;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background-color: rgba(0, 0, 0, 0.5);
-  z-index: 1050;
+  align-items: center !important;
+  justify-content: center !important;
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  background-color: rgba(0, 0, 0, 0.5) !important;
+  z-index: 1050 !important;
+  margin: 0 !important;
 }
 
 .modal-dialog {
-  margin: auto;
+  margin: auto !important;
   max-width: 400px;
   width: 90%;
+  transform: none !important;
 }
 
 .modal-content {
@@ -147,32 +175,44 @@
   border: none;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
   background-color: #ffffff;
-  padding: 10px;
+  padding: 16px;
   text-align: center;
 }
 
 .modal-header {
   border-bottom: none;
+  padding: 0 0 8px 0;
+  display: flex;
+  align-items: center;
   justify-content: center;
-  padding-bottom: 0;
+}
+
+.modal-title-grande {
+  font-size: 1.4rem;
+  font-weight: bold;
+  margin: 0;
+  text-align: center;
+  width: 100%;
 }
 
 .modal-body {
-  padding: 20px 0;
+  padding: 12px 0 20px 0;
+  font-size: 1rem;
+  color: #555;
 }
 
 .modal-footer {
   border-top: none;
   display: flex;
   justify-content: center;
-  padding-top: 0;
+  padding: 0;
 }
 
 .modal-footer .btn-primary {
   background-color: #c97d35;
   border-color: #c97d35;
   color: #ffffff;
-  padding: 10px 24px;
+  padding: 8px 24px;
   border-radius: 8px;
   font-weight: 500;
   width: auto;

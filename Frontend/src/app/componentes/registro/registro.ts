@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { Auth } from '../../services/auth'; 
+import {passwordMatchValidator} from '../../validators/password-validator';
 
 @Component({
   selector: 'app-registro',
@@ -21,33 +22,35 @@ export class Registro {
   errorMessage = signal<string | null>(null);
   mostrarModal = signal<boolean>(false); 
 
+  verContrasena = false;
+  verRepetirContrasena = false;
+
   constructor() {
     this.registroModel = this.fb.group({
-      nombre: ['', [Validators.required]],
-      apellido: ['', [Validators.required]],
-      email: ['', [Validators.required, Validators.email]],
-      nombreUsuario: ['', [Validators.required]],
-      fechaNacimiento: ['', [Validators.required]],
-      descripcionBreve: [''],
-      imagenPerfil: [''], 
-      contrasena: [          
-        '', 
-        [
-          Validators.required, 
-          Validators.minLength(8), 
-          Validators.pattern(/^(?=.*[A-Z])(?=.*\d).+$/)
-        ]
-      ],
-      repetirContrasena: ['', [Validators.required]] 
-    }, {
-      validators: this.passwordMatchValidator
-    });
-  }
+      nombre: ['', [Validators.required, Validators.minLength(3), Validators.pattern(/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/)]],
+      apellido: ['', [Validators.required, Validators.minLength(3), Validators.pattern(/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/)]],
+      email: ['', [Validators.required, Validators.email, Validators.minLength(3), Validators.maxLength(40)]],
+      nombreUsuario: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(20)]],
+      fechaNacimiento: ['', [Validators.required, Validators.minLength(10)]],
+      descripcionBreve: ['', [Validators.minLength(3), Validators.maxLength(200)]],
+      imagenPerfil: [''],
+      contrasena: ['', [Validators.required, Validators.minLength(8), Validators.pattern(/^(?=.*[A-Z])(?=.*\d).+$/)]], 
+      repetirContrasena: ['', [Validators.required]] }, {validators: passwordMatchValidator()});
+    }
 
-  passwordMatchValidator(form: FormGroup) {
-    const contrasena = form.get('contrasena')?.value;
-    const repetirContrasena = form.get('repetirContrasena')?.value;
-    return contrasena === repetirContrasena ? null : { mismatch: true };
+
+  onDateInput(event: any) {
+    let input = event.target;
+    let value = input.value.replace(/\D/g, ''); 
+    
+    if (value.length > 2 && value.length <= 4) {
+      value = value.slice(0, 2) + '/' + value.slice(2);
+    } else if (value.length > 4) {
+      value = value.slice(0, 2) + '/' + value.slice(2, 4) + '/' + value.slice(4, 8);
+    }
+    
+    input.value = value;
+    this.registroModel.patchValue({ fechaNacimiento: value }, { emitEvent: false });
   }
 
   onFileSelected(event: any) {
@@ -60,26 +63,31 @@ export class Registro {
   onSubmit(event: Event) {
     event.preventDefault();
     
-    if (this.registroModel.invalid) {
-      this.registroModel.markAllAsTouched();
+    this.registroModel.markAllAsTouched();
+
+    if (this.registroModel.errors?.['mismatch']) {
+      this.errorMessage.set('Las contraseñas no coinciden.');
       return;
     }
 
+    if (this.registroModel.invalid) {
+      this.errorMessage.set('Por favor, completá todos los campos obligatorios correctamente.');
+      return;
+    }
+
+    this.errorMessage.set(null);
     const valores = { ...this.registroModel.value };
     const imagenFile = valores.imagenPerfil; 
     delete valores.imagenPerfil;
 
     this.authService.registro(valores, imagenFile).subscribe({
       next: (response: any) => {
-        console.log('Registro exitoso, abriendo modal...');
-        
         if (response && response.token) {
           localStorage.setItem('token', response.token);
           if (response.usuario) {
             localStorage.setItem('user', JSON.stringify(response.usuario));
           }
         }
-
         this.mostrarModal.set(true);
       },
       error: (error: any) => {
