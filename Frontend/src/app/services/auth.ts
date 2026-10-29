@@ -16,7 +16,7 @@ export class Auth {
   private http = inject(HttpClient);
   private router = inject(Router);
 
-  private apiUrl = `${environment.apiUrl}/autenticacion`;
+  private apiUrl = `${environment.apiUrl}/autenticacion`; 
 
   private currentUserSubject = new BehaviorSubject<any>(this.getStoredUser());
   public currentUser$: Observable<any> = this.currentUserSubject.asObservable();
