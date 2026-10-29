@@ -1,67 +1,67 @@
-import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Router } from '@angular/router';
-import { BehaviorSubject, Observable, tap } from 'rxjs';
-import { environment } from '../../environments/environment'; 
+// import { Injectable, inject } from '@angular/core';
+// import { HttpClient } from '@angular/common/http';
+// import { Router } from '@angular/router';
+// import { BehaviorSubject, Observable, tap } from 'rxjs';
+// import { environment } from '../../environments/environment'; 
 
-export interface AuthResponse {
-  access_token: string;
-  user?: any;
-}
+// export interface AuthResponse {
+//   access_token: string;
+//   user?: any;
+// }
 
-@Injectable({
-  providedIn: 'root'
-})
-export class Auth {
-  private http = inject(HttpClient);
-  private router = inject(Router);
+// @Injectable({
+//   providedIn: 'root'
+// })
+// export class Auth {
+//   private http = inject(HttpClient);
+//   private router = inject(Router);
 
-  private apiUrl = `${environment.apiUrl}/autenticacion`;
+//   private apiUrl = `${environment.apiUrl}/autenticacion`;
 
-  private currentUserSubject = new BehaviorSubject<any>(this.getStoredUser());
-  public currentUser$: Observable<any> = this.currentUserSubject.asObservable();
+//   private currentUserSubject = new BehaviorSubject<any>(this.getStoredUser());
+//   public currentUser$: Observable<any> = this.currentUserSubject.asObservable();
 
-  constructor() {}
+//   constructor() {}
 
-  private getStoredUser() {
-    const userJson = localStorage.getItem('user');
-    return userJson ? JSON.parse(userJson) : null;
-  }
+//   private getStoredUser() {
+//     const userJson = localStorage.getItem('user');
+//     return userJson ? JSON.parse(userJson) : null;
+//   }
 
-  login(email: string, contrasena: string): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/login`, { email, contrasena }).pipe(
-      tap(response => {
-        if (response && response.token) {
-          localStorage.setItem('token', response.token);
-          if (response.usuario) {
-            localStorage.setItem('user', JSON.stringify(response.usuario));
-            this.currentUserSubject.next(response.usuario);
-          }
-        }
-      })
-    );
-  }
+//   login(email: string, contrasena: string): Observable<any> {
+//     return this.http.post<any>(`${this.apiUrl}/login`, { email, contrasena }).pipe(
+//       tap(response => {
+//         if (response && response.token) {
+//           localStorage.setItem('token', response.token);
+//           if (response.usuario) {
+//             localStorage.setItem('user', JSON.stringify(response.usuario));
+//             this.currentUserSubject.next(response.usuario);
+//           }
+//         }
+//       })
+//     );
+//   }
 
-  registro(datosRegistro: any, imagenFile?: File): Observable<any> {
-      const formData = new FormData();
+//   registro(datosRegistro: any, imagenFile?: File): Observable<any> {
+//       const formData = new FormData();
 
-      for (const key in datosRegistro) {
-        if (datosRegistro[key] !== undefined && datosRegistro[key] !== null) {
-          formData.append(key, datosRegistro[key]);
-        }
-      }
+//       for (const key in datosRegistro) {
+//         if (datosRegistro[key] !== undefined && datosRegistro[key] !== null) {
+//           formData.append(key, datosRegistro[key]);
+//         }
+//       }
 
-      if (imagenFile) {
-        formData.append('imagenPerfil', imagenFile);
-      }
+//       if (imagenFile) {
+//         formData.append('imagenPerfil', imagenFile);
+//       }
 
-      return this.http.post(`${this.apiUrl}/registro`, formData);
-    }
+//       return this.http.post(`${this.apiUrl}/registro`, formData);
+//     }
 
-  cerrarSesion(): void {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    this.currentUserSubject.next(null);
-    this.router.navigate(['/login']);
-  }
-}
+//   cerrarSesion(): void {
+//     localStorage.removeItem('token');
+//     localStorage.removeItem('user');
+//     this.currentUserSubject.next(null);
+//     this.router.navigate(['/login']);
+//   }
+// }
