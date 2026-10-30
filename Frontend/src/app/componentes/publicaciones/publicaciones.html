@@ -1,1 +1,77 @@
-<p>publicaciones works!</p>
+<!-- Barra de Navegación / Navbar -->
+<header class="barra-navegacion">
+    <div class="marca-contenedor">
+        <img src="logo.png" alt="Logo Patitas al refugio" class="logo-app" />
+        <span class="titulo-app">Patitas al refugio</span>
+    </div>
+    <div class="menu-navegacion">
+        <button class="boton-perfil" (click)="irAMiPerfil()">👤 Mi Perfil</button>
+    </div>
+</header>
+
+<!-- Contenido Principal -->
+<main class="contenedor-principal">
+    <section class="contenedor-feed">
+        <div class="header-publicaciones">
+            <h2>Publicaciones</h2>
+            <div class="selector-orden">
+                <label for="criterioOrden">Ordenar por:</label>
+                <select id="criterioOrden" (change)="cambiarOrden($event)">
+                    <option value="fechaCreacion" selected>Fecha de publicación</option>
+                    <option value="cantidadMeGusta">Cantidad de Me gusta</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Listado de publicaciones -->
+        @if (publicaciones.length > 0) {
+            <div class="grid-publicaciones">
+                @for (pub of publicaciones; track pub.id) {
+                    <article class="tarjeta-publicacion">
+                        <div class="autor-header">
+                            <!-- <img [src]="pub.urlAvatar || 'assets/default-avatar.png'" alt="Avatar" class="avatar" /> -->
+                            <span class="nombre-autor">{{ pub.nombreAutor || 'Usuario' }}</span>
+                            <span class="fecha-publicacion">{{ pub.createdAt | date:'dd/MM/yyyy, h:mm a' }}</span>
+                        </div>
+
+                        <div class="contenido-publicacion">
+                            <h3>{{ pub.titulo }}</h3>
+                            <p>{{ pub.descripcion }}</p>
+                            @if (pub.urlImagen) {
+                                <img [src]="pub.urlImagen" alt="Imagen de publicación" class="imagen-pub" />
+                            }
+                        </div>
+
+                        <footer class="footer-publicacion">
+                            <button 
+                                class="boton-like" 
+                                [class.activo]="pub.leGustaAlUsuarioActual"
+                                (click)="alternarMeGusta(pub)">
+                                ❤️ <span class="contador">{{ pub.cantidadMeGusta }}</span>
+                            </button>
+
+                            @if (pub.autor === idUsuarioActual) {
+                                <button class="boton-eliminar" (click)="confirmarEliminacion(pub.id)">
+                                    🗑️ Eliminar
+                                </button>
+                            }
+                        </footer>
+                    </article>
+                }
+            </div>
+        } @else {
+            <div class="estado-vacio">
+                <p>No hay publicaciones para mostrar en este momento.</p>
+            </div>
+        }
+
+        <!-- Paginador
+        @if (totalPaginas > 1) {
+            <nav class="paginador">
+                <button [disabled]="paginaActual === 1" (click)="cambiarPagina(paginaActual - 1)">Anterior</button>
+                <span>Página {{ paginaActual }} de {{ totalPaginas }}</span>
+                <button [disabled]="paginaActual === totalPaginas" (click)="cambiarPagina(paginaActual + 1)">Siguiente</button>
+            </nav>
+        } -->
+    </section>
+</main>

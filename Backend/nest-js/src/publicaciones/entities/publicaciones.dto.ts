@@ -1,21 +1,31 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import {HydratedDocument} from 'mongoose';
+import { HydratedDocument, Types } from 'mongoose';
 
-export type PublicacionesDocument = HydratedDocument<Publicacion>
+export type PublicacionDocument = HydratedDocument<Publicacion>;
 
-@Schema()
-export class Publicacion{
+@Schema({ timestamps: true, collection: 'publicaciones' })
+export class Publicacion {
 
-    @Prop()
-    autor: string;
+    @Prop({ required: true })
+    titulo: string;
 
-    @Prop()
-    contenido: string;
+    @Prop({ required: true })
+    descripcion: string;
 
-    @Prop()
-    likes: number;
+    @Prop({ default: '' })
+    urlImagen?: string;
 
-    
+    @Prop({ type: Types.ObjectId, ref: 'Usuario', required: true })
+    autor: Types.ObjectId; // O string si manejas los IDs como texto
+
+    @Prop({ default: 0 })
+    cantidadMeGusta: number;
+
+    @Prop({ type: [Types.ObjectId], ref: 'Usuario', default: [] })
+    usuariosQueDieronMeGusta: Types.ObjectId[]; // Clave para controlar que sea un solo like por usuario
+
+    @Prop({ default: true })
+    activo: boolean; // Necesario para la baja lógica
 }
-//Con esto le asignamos el esquema a la clase, la convertimos en uno. Despues se lo pasamos a services
+
 export const PublicacionSchema = SchemaFactory.createForClass(Publicacion);
