@@ -10,7 +10,10 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   app.enableCors({
-    origin: 'https://patitas-al-refugio-angular.vercel.app',
+    origin: [
+      'http://localhost:4200',
+      'https://patitas-al-refugio-angular-vercel.app'
+    ],
     methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Accept', 'Authorization'],
     credentials: true,
@@ -20,10 +23,11 @@ async function bootstrap() {
   app.use((req: any, res: any, next: any) => {
       if (req.method === 'OPTIONS') {
         res.header('Access-Control-Allow-Origin', 'https://patitas-al-refugio-angular.vercel.app');
+        res.header('Access-Control-Allow-Origin', req.headers.origin || 'http://localhost:4200');
         res.header('Access-Control-Allow-Methods', 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS');
         res.header('Access-Control-Allow-Headers', 'Content-Type, Accept, Authorization, X-Requested-With');
         res.header('Access-Control-Allow-Credentials', 'true');
-        return res.sendStatus(204); // Éxito limpio sin redirección
+        return res.sendStatus(204); 
       }
       next();
     });
