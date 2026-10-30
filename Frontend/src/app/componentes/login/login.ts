@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, signal, ChangeDetectorRef, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
@@ -23,8 +23,9 @@ export class Login implements OnInit {
     password: new FormControl('', {nonNullable: true, validators: [Validators.required, Validators.minLength(8), Validators.maxLength(20)]})
   });
 
+  private auth = inject(Auth);
+
   constructor(
-    private auth: Auth, 
     private router: Router,
     private cdr: ChangeDetectorRef
   ) {}

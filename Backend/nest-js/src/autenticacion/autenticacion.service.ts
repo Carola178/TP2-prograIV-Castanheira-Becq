@@ -78,12 +78,15 @@ export class AutenticacionService {
         return { token, usuario };
     }
 
+
     setTokenCookie(res: Response, token: string) {
         res.cookie('Token', token, {
             httpOnly: true,
-            sameSite: 'strict',
-            secure: false,
+            secure: true,
+            sameSite: 'none',
             maxAge: 1000 * 60 * 15,
+            path: '/',
         });
     }
+
 }

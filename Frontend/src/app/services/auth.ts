@@ -28,15 +28,17 @@ export class Auth {
     return userJson ? JSON.parse(userJson) : null;
   }
 
+
   login(email: string, contrasena: string): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/login`, { email, contrasena }).pipe(
+    return this.http.post<any>(
+      `${this.apiUrl}/login`,
+      { email, contrasena },
+      { withCredentials: true }
+    ).pipe(
       tap(response => {
-        if (response && response.token) {
-          localStorage.setItem('token', response.token);
-          if (response.usuario) {
-            localStorage.setItem('user', JSON.stringify(response.usuario));
-            this.currentUserSubject.next(response.usuario);
-          }
+        if (response && response.usuario) {
+          localStorage.setItem('user', JSON.stringify(response.usuario));
+          this.currentUserSubject.next(response.usuario);
         }
       })
     );
@@ -55,7 +57,18 @@ export class Auth {
         formData.append('imagenPerfil', imagenFile);
       }
 
-      return this.http.post(`${this.apiUrl}/registro`, formData);
+      return this.http.post<any>(
+        `${this.apiUrl}/registro`,
+        formData,
+        { withCredentials: true }
+      ).pipe(
+        tap(response => {
+          if (response && response.usuario) {
+            localStorage.setItem('user', JSON.stringify(response.usuario));
+            this.currentUserSubject.next(response.usuario);
+          }
+        })
+      );
     }
 
   cerrarSesion(): void {
