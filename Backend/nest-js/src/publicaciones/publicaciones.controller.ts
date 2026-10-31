@@ -24,28 +24,28 @@ export class PublicacionesController {
         return this.publicacionesService.obtenerTodos(filtros);
     }
 
-    // 3. DELETE: Baja lógica de una publicación (solo el creador o un administrador)
-    // @UseGuards(AuthGuard)
-    @Delete(':id')
-        async eliminarPublicacion(@Param('id') id: string) {
-            // Si ya estás manejando guardias de autenticación, puedes extraer el ID del usuario desde el request.
-            // Por ahora, llamamos directamente al servicio de eliminación:
-            return await this.publicacionesService.eliminar(id, '');
+    @UseGuards(AuthGuard)
+        @Delete(':id')
+        async eliminarPublicacion(@Param('id') id: string, @Req() req: any) {
+            // Extraemos el ID del usuario autenticado del token JWT
+            const idUsuarioActual = req.user?.id || req.user?.sub || req.user?._id;
+
+            // Se lo pasamos al servicio junto con el ID de la publicación
+            return await this.publicacionesService.eliminar(id, idUsuarioActual);
         }
 
-    // 4. POST: Dar "me gusta" a una publicación (un usuario solo puede dar uno por post)
-    // @UseGuards(AuthGuard)
-    @Post(':id/me-gusta')
-    darMeGusta(@Param('id') idPublicacion: string, @Req() req: any) {
-        const idUsuario = req.user?.id || 'id_usuario_prueba';
-        return this.publicacionesService.darMeGusta(idPublicacion, idUsuario);
-    }
+    @UseGuards(AuthGuard)
+        @Post(':id/me-gusta')
+        darMeGusta(@Param('id') idPublicacion: string, @Req() req: any) {
+            // Asegúrate de que tu JWT guarde el id en .id, .sub o _id (ajústalo según tu estrategia)
+            const idUsuario = req.user?.id || req.user?.sub || req.user?._id;
+            return this.publicacionesService.darMeGusta(idPublicacion, idUsuario);
+        }
 
-    // 5. DELETE: Quitar "me gusta" de una publicación
-    // @UseGuards(AuthGuard)
-    @Delete(':id/me-gusta')
-    quitarMeGusta(@Param('id') idPublicacion: string, @Req() req: any) {
-        const idUsuario = req.user?.id || 'id_usuario_prueba';
-        return this.publicacionesService.quitarMeGusta(idPublicacion, idUsuario);
-    }
+        @UseGuards(AuthGuard)
+        @Delete(':id/me-gusta')
+        quitarMeGusta(@Param('id') idPublicacion: string, @Req() req: any) {
+            const idUsuario = req.user?.id || req.user?.sub || req.user?._id;
+            return this.publicacionesService.quitarMeGusta(idPublicacion, idUsuario);
+        }
 }

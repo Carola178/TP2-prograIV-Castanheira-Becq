@@ -29,7 +29,7 @@
                 @for (pub of publicaciones; track pub.id) {
                     <article class="tarjeta-publicacion">
                         <div class="autor-header">
-                            <!-- <img [src]="pub.urlAvatar || 'assets/default-avatar.png'" alt="Avatar" class="avatar" /> -->
+                            <img [src]="pub.avatarAutor" alt="Avatar" class="avatar" />
                             <span class="nombre-autor">{{ pub.nombreAutor || 'Usuario' }}</span>
                             <span class="fecha-publicacion">{{ pub.createdAt | date:'dd/MM/yyyy, h:mm a' }}</span>
                         </div>
@@ -43,19 +43,19 @@
                         </div>
 
                         <footer class="footer-publicacion">
-                            <button 
-                                class="boton-like" 
-                                [class.activo]="pub.leGustaAlUsuarioActual"
-                                (click)="alternarMeGusta(pub)">
-                                ❤️ <span class="contador">{{ pub.cantidadMeGusta }}</span>
-                            </button>
+                        <button 
+                            class="boton-like" 
+                            [class.activo]="pub.leGustaAlUsuarioActual"
+                            (click)="alternarMeGusta(pub)">
+                            ❤️ <span class="contador">{{ pub.cantidadMeGusta }}</span>
+                        </button>
 
-                            @if (pub.autor === idUsuarioActual) {
-                                <button class="boton-eliminar" (click)="confirmarEliminacion(pub.id)">
-                                    🗑️ Eliminar
-                                </button>
-                            }
-                        </footer>
+                        @if (($any(pub).idAutor) === idUsuarioActual) {
+                        <button class="boton-eliminar" (click)="confirmarEliminacion(pub.id || $any(pub)._id)">
+                            🗑️ Eliminar
+                        </button>
+                    }
+                    </footer>
                     </article>
                 }
             </div>
@@ -65,13 +65,13 @@
             </div>
         }
 
-        <!-- Paginador
+
         @if (totalPaginas > 1) {
             <nav class="paginador">
                 <button [disabled]="paginaActual === 1" (click)="cambiarPagina(paginaActual - 1)">Anterior</button>
                 <span>Página {{ paginaActual }} de {{ totalPaginas }}</span>
                 <button [disabled]="paginaActual === totalPaginas" (click)="cambiarPagina(paginaActual + 1)">Siguiente</button>
             </nav>
-        } -->
+        }
     </section>
 </main>
