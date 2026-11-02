@@ -54,7 +54,12 @@ export class Publicaciones implements OnInit {
   cargarPublicaciones(): void {
     this.offset = (this.paginaActual - 1) * this.limite;
 
-    this.publicacionesService.obtenerPublicaciones(this.criterioOrden, this.limite, this.offset).subscribe({
+    // CORREGIDO: Se pasa un objeto de filtros que coincide con el servicio y el backend
+    this.publicacionesService.obtenerPublicaciones({
+      ordenarPor: this.criterioOrden,
+      limite: this.limite,
+      offset: this.offset
+    }).subscribe({
       next: (data: any) => {
         console.log('Datos crudos que llegan del backend:', data);
 
@@ -81,8 +86,9 @@ export class Publicaciones implements OnInit {
             autor: typeof pub.autor === 'object' && pub.autor !== null 
               ? String(pub.autor._id || pub.autor.id) 
               : String(pub.autor),
-            nombreAutor: pub.nombreAutor || (typeof pub.autor === 'object' && pub.autor !== null ? pub.autor.nombre : 'Usuario'),
-            avatarAutor: pub.avatarAutor,
+            nombreAutor: pub.autor && typeof pub.autor === 'object'? `${pub.autor.nombre} ${pub.autor.apellido}`: 'Usuario',
+            avatarAutor: pub.autor && typeof pub.autor === 'object'
+              ? pub.autor.imagenPerfil: '',
             cantidadMeGusta: pub.cantidadMeGusta || 0,
             leGustaAlUsuarioActual: pub.leGustaAlUsuarioActual || false,
             cantidadComentarios: pub.cantidadComentarios || 0,
@@ -146,15 +152,31 @@ export class Publicaciones implements OnInit {
   }
 
   alternarMeGusta(publicacion: Publicacion): void {
-    if (publicacion.leGustaAlUsuarioActual) {
-      publicacion.cantidadMeGusta = Math.max(0, publicacion.cantidadMeGusta - 1);
-      publicacion.leGustaAlUsuarioActual = false;
-    } else {
-      publicacion.cantidadMeGusta++;
-      publicacion.leGustaAlUsuarioActual = true;
-    }
-    // Mantenemos la actualización limpia sin reordenar de golpe para que la tarjeta no desaparezca del front
-    this.cdr.detectChanges();
+    const accion = publicacion.leGustaAlUsuarioActual
+      ? this.publicacionesService.quitarMeGusta(publicacion.id)
+      : this.publicacionesService.darMeGusta(publicacion.id);
+
+    accion.subscribe({
+      next: (respuesta: any) => {
+        const publicacionActualizada = respuesta.publicacion;
+
+        publicacion.cantidadMeGusta =
+          publicacionActualizada.cantidadMeGusta;
+
+        publicacion.leGustaAlUsuarioActual =
+          !publicacion.leGustaAlUsuarioActual;
+
+        if (this.criterioOrden === 'cantidadMeGusta') {
+          this.cargarPublicaciones();
+        }
+
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('Error al modificar el Me gusta:', err);
+        alert('No se pudo registrar el Me gusta. Inténtalo nuevamente.');
+      }
+    });
   }
 
   confirmarEliminacion(idPublicacion: string): void {

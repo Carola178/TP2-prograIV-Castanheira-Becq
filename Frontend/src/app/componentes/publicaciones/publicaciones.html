@@ -29,7 +29,6 @@
                 @for (pub of publicaciones; track pub.id) {
                     <article class="tarjeta-publicacion">
                         <div class="autor-header">
-                            <img [src]="pub.avatarAutor" alt="Avatar" class="avatar" />
                             <span class="nombre-autor">{{ pub.nombreAutor || 'Usuario' }}</span>
                             <span class="fecha-publicacion">{{ pub.createdAt | date:'dd/MM/yyyy, h:mm a' }}</span>
                         </div>
@@ -50,8 +49,8 @@
                             ❤️ <span class="contador">{{ pub.cantidadMeGusta }}</span>
                         </button>
 
-                        @if (($any(pub).idAutor) === idUsuarioActual) {
-                        <button class="boton-eliminar" (click)="confirmarEliminacion(pub.id || $any(pub)._id)">
+                        @if (pub.autor === idUsuarioActual) {
+                        <button class="boton-eliminar" (click)="confirmarEliminacion(pub.id)">
                             🗑️ Eliminar
                         </button>
                     }

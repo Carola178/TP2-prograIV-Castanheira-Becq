@@ -76,7 +76,6 @@
   cursor: pointer;
 }
 
-/* Tarjetas de publicación */
 .grid-publicaciones {
   display: flex;
   flex-direction: column;

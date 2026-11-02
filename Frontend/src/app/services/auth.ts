@@ -70,11 +70,17 @@ export class Auth {
         })
       );
     }
+    
+    cerrarSesion(): void {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      this.currentUserSubject.next(null);
+      this.router.navigate(['/login']);
+  }
 
-  cerrarSesion(): void {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    this.currentUserSubject.next(null);
-    this.router.navigate(['/login']);
+  getPerfil(id: string): Observable<any> {
+  return this.http.get<any>(`${this.apiUrl}/perfil/${id}`, {
+    withCredentials: true
+  });
   }
 }

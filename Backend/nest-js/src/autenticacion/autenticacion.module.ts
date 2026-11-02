@@ -6,6 +6,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Usuario, UsuarioSchema } from '../usuarios/entities/usuario.entity.js';
 import { PasswordHasher } from '@nestjs/authentication';
+import { FileService } from '../documentos/file.service.js';
 
 @Module({
   imports: [
@@ -18,7 +19,7 @@ import { PasswordHasher } from '@nestjs/authentication';
     MongooseModule.forFeature([{ name: Usuario.name, schema: UsuarioSchema }]),
   ],
   controllers: [AutenticacionController],
-  providers: [AutenticacionService, PasswordHasher],
+  providers: [AutenticacionService, PasswordHasher, FileService],
   exports: [AutenticacionService],
 })
 export class AutenticacionModule {} 

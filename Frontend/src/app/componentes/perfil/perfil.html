@@ -1,1 +1,77 @@
-<p>perfil works!</p>
+<!-- Barra de Navegación / Navbar -->
+<header class="barra-navegacion">
+    <div class="marca-contenedor">
+        <img src="logo.png" alt="Logo Patitas al refugio" class="logo-app" />
+        <span class="titulo-app">Patitas al refugio</span>
+    </div>
+    <div class="menu-navegacion">
+        <button class="boton-perfil" (click)="irAlFeed()">🏠 Volver al feed</button>
+    </div>
+</header>
+
+<!-- Contenido Principal del Perfil -->
+<main class="contenedor-principal">
+    
+    <!-- Encabezado / Datos del Usuario -->
+    @if (usuario) {
+        <section class="perfil-header-card">
+            <div class="foto-perfil-wrapper">
+                <img
+                    [src]="usuario.imagenPerfil || 'assets/default-user.png'"
+                    alt="Foto de perfil"
+                    class="foto-perfil-img"
+                />
+            </div>
+            <div class="perfil-info">
+                <h2>{{ usuario.nombre || usuario.nombreUsuario }} {{ usuario.apellido || '' }}</h2>
+                <p class="perfil-email">{{ usuario.email }}</p>
+            </div>
+        </section>
+    }
+
+    <!-- Sección de Publicaciones del Usuario -->
+    <section class="contenedor-feed">
+        <div class="header-publicaciones">
+            <h2>Mis Publicaciones</h2>
+        </div>
+
+        @if (cargando) {
+            <div class="estado-vacio">
+                <p>Cargando perfil y publicaciones...</p>
+            </div>
+        } @else {
+            @if (publicaciones.length > 0) {
+                <div class="grid-publicaciones">
+                    @for (pub of publicaciones; track pub.id) {
+                        <article class="tarjeta-publicacion">
+                            <div class="autor-header">
+                                <span class="nombre-autor">{{ pub.nombreAutor || 'Usuario' }}</span>
+                            </div>
+
+                            <div class="contenido-publicacion">
+                                <h3>{{ pub.titulo }}</h3>
+                                <p>{{ pub.descripcion }}</p>
+                                @if (pub.urlImagen) {
+                                    <img [src]="pub.urlImagen" alt="Imagen de publicación" class="imagen-pub" />
+                                }
+                            </div>
+
+                            <footer class="footer-publicacion">
+                                @if (pub.autor === idUsuarioActual) {
+                                    <button class="boton-eliminar" (click)="confirmarEliminacion(pub.id)">
+                                        🗑️ Eliminar
+                                    </button>
+                                }
+                            </footer>
+                        </article>
+                    }
+                </div>
+            } @else {
+                <div class="estado-vacio">
+                    <p>Aún no realizaste ninguna publicación.</p>
+                </div>
+            }
+        }
+
+    </section>
+</main>

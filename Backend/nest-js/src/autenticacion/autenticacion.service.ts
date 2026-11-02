@@ -79,11 +79,14 @@ export class AutenticacionService {
     }
 
 
+
     setTokenCookie(res: Response, token: string) {
+        const esProduccion = process.env.NODE_ENV === 'production';
+
         res.cookie('Token', token, {
             httpOnly: true,
-            secure: true,
-            sameSite: 'none',
+            secure: esProduccion,
+            sameSite: esProduccion ? 'none' : 'lax',
             maxAge: 1000 * 60 * 15,
             path: '/',
         });

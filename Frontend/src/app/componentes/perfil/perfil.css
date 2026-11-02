@@ -1,0 +1,219 @@
+:host {
+    display: block;
+    background-color: var(--bg-main, #F8F7FA);
+    min-height: 100vh;
+    padding-bottom: 3rem;
+}
+
+/* ==========================================
+   Barra de Navegación / Navbar
+   ========================================== */
+.barra-navegacion {
+    background-color: var(--primary-color);
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 8px rgba(140, 130, 234, 0.08);
+    /* border-bottom: 1px solid var(--border-color, #E2DFFA); */
+    margin-bottom: 2rem;
+}
+
+.marca-contenedor {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.logo-app {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.titulo-app {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+/* .boton-perfil {
+    background-color: var(--border-color);
+    color: #1f2937;
+    font-weight: 600;
+    border: none;
+    padding: 0.6rem 1.2rem;
+    border-radius: 8px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+} */
+
+
+.boton-perfil {
+  background-color: #f3f4f6;
+  border: 1px solid #d1d5db;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  color: #374151;
+  transition: background-color 0.2s;
+}
+
+.boton-perfil:hover {
+  background-color: #e5e7eb;
+}
+
+/* ==========================================
+   Contenido Principal y Cabecera del Perfil
+   ========================================== */
+.contenedor-principal {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 1rem;
+    font-family: inherit;
+    color: var(--text-dark, #2D3142);
+}
+
+.perfil-header-card {
+    background: var(--card-bg, #FFFFFF);
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(140, 130, 234, 0.08);
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    margin-bottom: 2rem;
+    border: 1px solid var(--border-color, #E2DFFA);
+}
+
+.foto-perfil-wrapper {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 3px solid var(--primary-color, #8C82EA);
+    flex-shrink: 0;
+    background-color: var(--bg-light, #F1EFFE);
+}
+
+.foto-perfil-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.perfil-info h2 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.5rem;
+    color: var(--text-dark, #2D3142);
+}
+
+.perfil-email {
+    margin: 0;
+    color: var(--text-muted, #6C757D);
+}
+
+/* ==========================================
+   Sección de Publicaciones del Perfil
+   ========================================== */
+.contenedor-feed {
+    background: transparent;
+}
+
+.header-publicaciones h2 {
+    margin-bottom: 1.5rem;
+    font-size: 1.25rem;
+    color: var(--text-dark, #2D3142);
+    border-bottom: 2px solid var(--border-color, #E2DFFA);
+    padding-bottom: 0.5rem;
+}
+
+.grid-publicaciones {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.tarjeta-publicacion {
+    background: var(--card-bg, #FFFFFF);
+    border-radius: 10px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 8px rgba(140, 130, 234, 0.05);
+    border: 1px solid var(--border-color, #E2DFFA);
+}
+
+.autor-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    font-size: 0.85rem;
+    color: var(--text-muted, #6C757D);
+}
+
+.nombre-autor {
+    font-weight: 600;
+    color: var(--text-dark, #2D3142);
+}
+
+.contenido-publicacion h3 {
+    margin: 0.5rem 0;
+    font-size: 1.1rem;
+    color: var(--text-dark, #2D3142);
+}
+
+.contenido-publicacion p {
+    color: var(--text-muted, #6C757D);
+    font-size: 0.95rem;
+    line-height: 1.4;
+    margin-bottom: 1rem;
+}
+
+.imagen-pub {
+    width: 100%;
+    max-height: 300px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-top: 0.5rem;
+}
+
+/* ==========================================
+   Footer de Publicación y Acciones
+   ========================================== */
+.footer-publicacion {
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border-color, #E2DFFA);
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+.boton-eliminar {
+    background-color: transparent;
+    color: #E63946;
+    border: 1px solid #E63946;
+    padding: 0.4rem 0.8rem;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.boton-eliminar:hover {
+    background-color: #E63946;
+    color: #FFFFFF;
+}
+
+.estado-vacio {
+    text-align: center;
+    padding: 3rem;
+    background: var(--card-bg, #FFFFFF);
+    border-radius: 10px;
+    border: 1px solid var(--border-color, #E2DFFA);
+    color: var(--text-muted, #6C757D);
+    font-style: italic;
+}

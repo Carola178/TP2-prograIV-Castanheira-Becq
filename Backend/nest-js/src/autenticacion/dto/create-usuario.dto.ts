@@ -1,4 +1,4 @@
-import { IsString, IsEmail, MinLength, Matches, IsOptional, IsDateString, IsIn } from 'class-validator';
+import { IsString, IsEmail, MinLength, Matches, IsOptional, IsIn } from 'class-validator';
 
 export class CrearUsuarioDto {
     @IsString({ message: 'El nombre debe ser texto' })
@@ -23,7 +23,9 @@ export class CrearUsuarioDto {
     @IsOptional() 
         repetirContrasena?: string;
 
-    @IsDateString({}, { message: 'La fecha de nacimiento debe tener un formato válido' })
+    @Matches(/^\d{2}\/\d{2}\/\d{4}$/, { 
+        message: 'La fecha de nacimiento debe tener el formato DD/MM/YYYY' 
+    })
     fechaNacimiento: string;
 
     @IsOptional()
@@ -32,7 +34,7 @@ export class CrearUsuarioDto {
 
     @IsOptional()
     @IsString({ message: 'La imagen de perfil debe ser una ruta válida' })
-    imagenPerfil?: string; 
+    imagenPerfil?: any;
 
     @IsOptional()
     @IsIn(['usuario', 'administrador'], { message: 'El perfil debe ser usuario o administrador' })

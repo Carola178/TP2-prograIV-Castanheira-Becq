@@ -3,7 +3,8 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { PublicacionesController } from './publicaciones.controller.js';
 import { PublicacionesService } from './publicaciones.service.js';
 import { Publicacion, PublicacionSchema } from './entities/publicaciones.dto.js';
-import { Usuario, UsuarioSchema } from '../usuarios/entities/usuario.entity.js'; 
+import { Usuario, UsuarioSchema } from '../usuarios/entities/usuario.entity.js';
+import { FileService } from '../documentos/file.service.js';
 
 @Module({
   imports: [
@@ -13,6 +14,6 @@ import { Usuario, UsuarioSchema } from '../usuarios/entities/usuario.entity.js';
     ])
   ],
   controllers: [PublicacionesController],
-  providers: [PublicacionesService],
+  providers: [PublicacionesService, FileService],
 })
 export class PublicacionesModule {}
