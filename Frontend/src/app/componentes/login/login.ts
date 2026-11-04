@@ -18,7 +18,7 @@ export class Login implements OnInit {
   verContrasena = false;
 
   loginModel = new FormGroup({
-    email: new FormControl('', {nonNullable: true, validators: [Validators.required, Validators.minLength(3), Validators.maxLength(40), Validators.email]}),
+    email: new FormControl('', {nonNullable: true, validators: [Validators.required, Validators.minLength(3), Validators.maxLength(40)]}),
 
     password: new FormControl('', {nonNullable: true, validators: [Validators.required, Validators.minLength(8), Validators.maxLength(20)]})
   });

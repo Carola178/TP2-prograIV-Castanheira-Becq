@@ -16,16 +16,16 @@ export class Publicacion {
     urlImagen?: string;
 
     @Prop({ type: Types.ObjectId, ref: 'Usuario', required: true })
-    autor: Types.ObjectId; // O string si manejas los IDs como texto
+    autor: Types.ObjectId; 
 
     @Prop({ default: 0 })
     cantidadMeGusta: number;
 
     @Prop({ type: [Types.ObjectId], ref: 'Usuario', default: [] })
-    usuariosQueDieronMeGusta: Types.ObjectId[]; // Clave para controlar que sea un solo like por usuario
+    usuariosQueDieronMeGusta: Types.ObjectId[]; 
 
     @Prop({ default: true })
-    activo: boolean; // Necesario para la baja lógica
+    activo: boolean; 
 }
 
 export const PublicacionSchema = SchemaFactory.createForClass(Publicacion);

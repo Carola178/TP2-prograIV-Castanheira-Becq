@@ -1,11 +1,17 @@
-<!-- Barra de Navegación / Navbar -->
 <header class="barra-navegacion">
     <div class="marca-contenedor">
         <img src="logo.png" alt="Logo Patitas al refugio" class="logo-app" />
         <span class="titulo-app">Patitas al refugio</span>
     </div>
+
     <div class="menu-navegacion">
-        <button class="boton-perfil" (click)="irAMiPerfil()">👤 Mi Perfil</button>
+        <button class="boton-perfil" (click)="irAMiPerfil()">
+            👤 Mi Perfil
+        </button>
+
+        <button class="boton-perfil btn-logout" (click)="cerrarSesion()">
+            Cerrar sesión
+        </button>
     </div>
 </header>
 
@@ -14,12 +20,19 @@
     <section class="contenedor-feed">
         <div class="header-publicaciones">
             <h2>Publicaciones</h2>
-            <div class="selector-orden">
-                <label for="criterioOrden">Ordenar por:</label>
-                <select id="criterioOrden" (change)="cambiarOrden($event)">
-                    <option value="fechaCreacion" selected>Fecha de publicación</option>
-                    <option value="cantidadMeGusta">Cantidad de Me gusta</option>
-                </select>
+            
+            <div class="acciones-header" style="display: flex; gap: 12px; align-items: center;">
+                <button class="btn-nueva-pub" (click)="abrirModalCrear()">
+                    ➕ Nueva Publicación
+                </button>
+                
+                <div class="selector-orden">
+                    <label for="criterioOrden">Ordenar por:</label>
+                    <select id="criterioOrden" (change)="cambiarOrden($event)">
+                        <option value="fechaCreacion" selected>Fecha de publicación</option>
+                        <option value="cantidadMeGusta">Cantidad de Me gusta</option>
+                    </select>
+                </div>
             </div>
         </div>
 
@@ -50,11 +63,11 @@
                         </button>
 
                         @if (pub.autor === idUsuarioActual) {
-                        <button class="boton-eliminar" (click)="confirmarEliminacion(pub.id)">
-                            🗑️ Eliminar
-                        </button>
-                    }
-                    </footer>
+                            <button class="boton-eliminar" (click)="confirmarEliminacion(pub.id)">
+                                🗑️ Eliminar
+                            </button>
+                        }
+                        </footer>
                     </article>
                 }
             </div>
@@ -63,7 +76,6 @@
                 <p>No hay publicaciones para mostrar en este momento.</p>
             </div>
         }
-
 
         @if (totalPaginas > 1) {
             <nav class="paginador">
@@ -74,3 +86,66 @@
         }
     </section>
 </main>
+
+<!-- MODAL: CREAR NUEVA PUBLICACIÓN -->
+@if (mostrarModalCrear) {
+    <div class="modal-backdrop">
+        <div class="modal-content modal-crear-publicacion">
+            <h3>Nueva Publicación</h3>
+            <p>Compartí algo con la comunidad del refugio.</p>
+            
+            <form [formGroup]="publicacionForm" (ngSubmit)="ejecutarCrearPublicacion()" style="text-align: left;">
+                <div style="margin-bottom: 12px;">
+                    <label for="titulo" style="display: block; font-weight: 600; margin-bottom: 4px; color: #374151;">Título</label>
+                    <input type="text" id="titulo" formControlName="titulo" placeholder="Ej: ¡Nuevo hogar para perrito!" style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px; box-sizing: border-box;">
+                    @if (publicacionForm.get('titulo')?.hasError('required') && publicacionForm.get('titulo')?.touched) {
+                        <small style="color: red; display: block; margin-top: 4px;">El título es obligatorio.</small>
+                    }
+                </div>
+
+                <div style="margin-bottom: 12px;">
+                    <label for="descripcion" style="display: block; font-weight: 600; margin-bottom: 4px; color: #374151;">Descripción</label>
+                    <textarea id="descripcion" formControlName="descripcion" rows="3" placeholder="Contanos los detalles..." style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px; box-sizing: border-box; resize: vertical;"></textarea>
+                    @if (publicacionForm.get('descripcion')?.hasError('required') && publicacionForm.get('descripcion')?.touched) {
+                        <small style="color: red; display: block; margin-top: 4px;">La descripción es obligatoria.</small>
+                    }
+                </div>
+                <div style="margin-bottom: 20px;">
+                    <label for="imagen" style="display: block; font-weight: 600; margin-bottom: 4px; color: #374151;">Imagen</label>
+                    <input type="file" id="imagen" (change)="onFileSelected($event)" accept="image/*" style="width: 100%;">
+                </div>
+
+                <div style="display: flex; justify-content: flex-end; gap: 8px;">
+                    <button type="button" class="btn-cancelar" (click)="cerrarModalCrear()">Cancelar</button>
+                    
+                    <button type="submit" class="btn-cerrar-modal" [disabled]="publicacionForm.invalid || publicando"> {{ publicando ? 'Publicando...' : 'Publicar' }} </button>
+                </div>
+            </form>
+        </div>
+    </div>
+}
+
+<!-- MODAL DE CONFIRMACIÓN DE ELIMINACIÓN -->
+@if (mostrarModalConfirmacion) {
+    <div class="modal-backdrop">
+        <div class="modal-content">
+            <h3>Eliminar Publicación</h3>
+            <p>¿Estás seguro de que deseas eliminar esta publicación? Esta acción no se puede deshacer.</p>
+            <div style="display: flex; justify-content: center; gap: 12px;">
+                <button class="btn-cancelar" (click)="cancelarEliminacion()">Cancelar</button>
+                <button class="btn-confirmar-eliminar" (click)="ejecutarEliminacion()">Eliminar</button>
+            </div>
+        </div>
+    </div>
+}
+
+<!-- MODAL DE ERROR -->
+@if (mostrarModalError) {
+    <div class="modal-backdrop">
+        <div class="modal-content">
+            <h3>Atención</h3>
+            <p>{{ mensajeErrorModal }}</p>
+            <button class="btn-cerrar-modal" (click)="cerrarModalError()">Aceptar</button>
+        </div>
+    </div>
+}

@@ -54,9 +54,27 @@ export class Registro {
   }
 
   onFileSelected(event: any) {
-    const file = event.target.files[0];
-    if (file) {
-      this.registroModel.patchValue({ imagenPerfil: file });
+      const file = event.target.files[0];
+      if (file) {
+        this.registroModel.patchValue({ imagenPerfil: file });
+      }
+    }
+
+    onCapitalizeInput(campo: string, event: Event) {
+    const input = event.target as HTMLInputElement | HTMLTextAreaElement;
+    const valor = input.value;
+    const valorFormateado = valor.replace(
+      /(^|\s)(\p{L})/gu,
+      (_, espacio, letra) => espacio + letra.toLocaleUpperCase('es-AR')
+    );
+
+    if (valor !== valorFormateado) {
+      const posicion = input.selectionStart;
+      input.value = valorFormateado;
+      this.registroModel.get(campo)?.setValue(valorFormateado, {
+        emitEvent: false
+      });
+      input.setSelectionRange(posicion, posicion);
     }
   }
 

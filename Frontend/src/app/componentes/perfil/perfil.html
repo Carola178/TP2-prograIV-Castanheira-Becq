@@ -1,38 +1,60 @@
-<!-- Barra de Navegación / Navbar -->
 <header class="barra-navegacion">
     <div class="marca-contenedor">
         <img src="logo.png" alt="Logo Patitas al refugio" class="logo-app" />
         <span class="titulo-app">Patitas al refugio</span>
     </div>
+
     <div class="menu-navegacion">
-        <button class="boton-perfil" (click)="irAlFeed()">🏠 Volver al feed</button>
+        <button class="boton-perfil" (click)="irAlFeed()">
+            🏠 Volver al feed
+        </button>
+
+        <button class="boton-perfil btn-logout" (click)="cerrarSesion()">
+            Cerrar sesión
+        </button>
     </div>
 </header>
 
-<!-- Contenido Principal del Perfil -->
 <main class="contenedor-principal">
     
-    <!-- Encabezado / Datos del Usuario -->
     @if (usuario) {
         <section class="perfil-header-card">
             <div class="foto-perfil-wrapper">
-                <img
-                    [src]="usuario.imagenPerfil || 'assets/default-user.png'"
-                    alt="Foto de perfil"
-                    class="foto-perfil-img"
-                />
+                @if (usuario.imagenPerfil) {
+                    <img
+                        [src]="usuario.imagenPerfil"
+                        alt="Foto de perfil"
+                        class="foto-perfil-img"
+                    />
+                }
             </div>
             <div class="perfil-info">
                 <h2>{{ usuario.nombre || usuario.nombreUsuario }} {{ usuario.apellido || '' }}</h2>
-                <p class="perfil-email">{{ usuario.email }}</p>
+                
+                @if (usuario.nombreUsuario) {
+                    <p class="perfil-username">@{{ usuario.nombreUsuario }}</p>
+                }
+                
+                <p class="perfil-email">📧 {{ usuario.email }}</p>
+
+                @if (usuario.fechaNacimiento) {
+                    <p class="perfil-nacimiento">🎂 Cumpleaños: {{ usuario.fechaNacimiento }}</p>
+                }
+
+                @if (usuario.descripcion) {
+                    <p class="perfil-descripcion"><em>"{{ usuario.descripcion }}"</em></p>
+                }
+
+                @if (usuario.perfil) {
+                    <p class="perfil-rol">Rol: <span class="badge-rol">{{ usuario.perfil }}</span></p>
+                }
             </div>
         </section>
     }
 
-    <!-- Sección de Publicaciones del Usuario -->
     <section class="contenedor-feed">
         <div class="header-publicaciones">
-            <h2>Mis Publicaciones</h2>
+            <h2>Mis Últimas Publicaciones</h2>
         </div>
 
         @if (cargando) {

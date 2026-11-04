@@ -20,10 +20,8 @@ async function bootstrap() {
     credentials: true,
   });
 
-  // Permite leer las cookies recibidas
   app.use(cookieParser());
 
-  // Validaciones globales
   app.useGlobalPipes(new ValidationPipe());
 
   await app.listen(process.env.PORT ?? 3000);

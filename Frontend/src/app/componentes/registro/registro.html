@@ -17,7 +17,7 @@
         <!-- Nombre -->
         <div class="form-group">
             <label for="nombre">Nombre</label>
-            <input type="text" id="nombre" formControlName="nombre" placeholder="Tu nombre">
+            <input type="text" id="nombre" formControlName="nombre"placeholder="Tu nombre"(input)="onCapitalizeInput('nombre', $event)">
             <small *ngIf="registroModel.get('nombre')?.hasError('required') && registroModel.get('nombre')?.touched" class="error-msg" style="color: red; display: block; margin-top: 4px;">
                 El nombre no es válido.
             </small>
@@ -29,7 +29,7 @@
         <!-- Apellido -->
         <div class="form-group">
             <label for="apellido">Apellido</label>
-            <input type="text" id="apellido" formControlName="apellido" placeholder="Tu apellido">
+            <input type="text" id="apellido" formControlName="apellido" placeholder="Tu apellido"(input)="onCapitalizeInput('apellido', $event)">
             <small *ngIf="registroModel.get('apellido')?.hasError('required') && registroModel.get('apellido')?.touched" class="error-msg" style="color: red; display: block; margin-top: 4px;">
                 El apellido es obligatorio.
             </small>
@@ -53,7 +53,7 @@
         <!-- Nombre de Usuario -->
         <div class="form-group">
             <label for="nombre_usuario">Nombre de Usuario</label>
-            <input type="text" id="nombre_usuario" formControlName="nombreUsuario" placeholder="usuario123">
+            <input type="text" id="nombre_usuario" formControlName="nombreUsuario" placeholder="usuario123" (input)="onCapitalizeInput('nombre_usuario', $event)">
             <small *ngIf="registroModel.get('nombreUsuario')?.hasError('required') && registroModel.get('nombreUsuario')?.touched" class="error-msg" style="color: red; display: block; margin-top: 4px;">
                 El nombre de usuario es obligatorio.
             </small>
@@ -80,7 +80,7 @@
         <!-- Descripción Breve -->
         <div class="form-group">
             <label for="descripcion">Descripción Breve</label>
-            <textarea id="descripcion" formControlName="descripcionBreve" rows="2" placeholder="Contanos algo sobre vos..."></textarea>
+            <textarea id="descripcion" formControlName="descripcionBreve" rows="2" placeholder="Contanos algo sobre vos..." (input)="onCapitalizeInput('descripcionBreve', $event)"> </textarea>
             <small *ngIf="registroModel.get('descripcionBreve')?.hasError('maxlength')" class="error-msg" style="color: red; display: block; margin-top: 4px;">
                 La descripción no puede superar los 250 caracteres.
             </small>

@@ -1,13 +1,7 @@
-:host {
-    display: block;
-    background-color: var(--bg-main, #F8F7FA);
-    min-height: 100vh;
-    padding-bottom: 3rem;
-}
-
 /* ==========================================
    Barra de Navegación / Navbar
    ========================================== */
+
 .barra-navegacion {
     background-color: var(--primary-color);
     padding: 1rem 2rem;
@@ -15,7 +9,6 @@
     justify-content: space-between;
     align-items: center;
     box-shadow: 0 2px 8px rgba(140, 130, 234, 0.08);
-    /* border-bottom: 1px solid var(--border-color, #E2DFFA); */
     margin-bottom: 2rem;
 }
 
@@ -33,39 +26,41 @@
 }
 
 .titulo-app {
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: #1f2937;
-}
-
-/* .boton-perfil {
-    background-color: var(--border-color);
+    font-size: 1.25rem;
+    font-weight: 700;
     color: #1f2937;
-    font-weight: 600;
-    border: none;
-    padding: 0.6rem 1.2rem;
+}
+
+.menu-navegacion {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.menu-navegacion .boton-perfil {
+    width: 145px;
+    height: 40px;
+    box-sizing: border-box;
+    background-color: #f3f4f6;
+    border: 1px solid #d1d5db;
+    padding: 8px 12px;
     border-radius: 8px;
-    font-weight: 500;
     cursor: pointer;
-    transition: background-color 0.2s ease;
-} */
-
-
-.boton-perfil {
-  background-color: #f3f4f6;
-  border: 1px solid #d1d5db;
-  padding: 8px 16px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: 600;
-  color: #374151;
-  transition: background-color 0.2s;
+    font-weight: 600;
+    color: #374151;
+    text-align: center;
+    transition: all 0.2s ease;
 }
 
-.boton-perfil:hover {
-  background-color: #e5e7eb;
+.menu-navegacion .boton-perfil:hover {
+    background-color: #e5e7eb;
 }
 
+.menu-navegacion .btn-logout:hover {
+    background-color: #fee2e2;
+    border-color: #fca5a5;
+    color: #dc2626;
+}
 /* ==========================================
    Contenido Principal y Cabecera del Perfil
    ========================================== */
@@ -216,4 +211,9 @@
     border: 1px solid var(--border-color, #E2DFFA);
     color: var(--text-muted, #6C757D);
     font-style: italic;
+}
+.btn-logout:hover {
+    background-color: #fee2e2;
+    border-color: #fca5a5;
+    color: #dc2626;
 }

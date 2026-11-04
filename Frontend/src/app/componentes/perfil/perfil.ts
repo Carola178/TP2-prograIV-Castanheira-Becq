@@ -21,7 +21,8 @@ export interface Publicacion {
 @Component({
   selector: 'app-perfil',
   templateUrl: './perfil.html',
-  styleUrls: ['./perfil.css']
+  styleUrls: ['./perfil.css'],
+  imports: [CommonModule]
 })
 export class Perfil implements OnInit {
   usuario: any = null;
@@ -56,7 +57,6 @@ export class Perfil implements OnInit {
       return;
     }
 
-    // 1. Obtenemos datos frescos del perfil
     this.authService.getPerfil(this.idUsuarioActual).subscribe({
       next: (userFrescos: any) => {
         this.usuario = userFrescos;
@@ -73,7 +73,6 @@ export class Perfil implements OnInit {
   cargarPublicacionesUsuario(): void {
     this.offset = (this.paginaActual - 1) * this.limite;
 
-    // Filtramos explícitamente por el id del usuario actual
     this.publicacionesService.obtenerPublicaciones({
       idUsuario: this.idUsuarioActual,
       limite: this.limite,
@@ -124,7 +123,6 @@ export class Perfil implements OnInit {
     const accion = publicacion.leGustaAlUsuarioActual
       ? this.publicacionesService.quitarMeGusta(publicacion.id)
       : this.publicacionesService.darMeGusta(publicacion.id);
-
     accion.subscribe({
       next: (respuesta: any) => {
         const publicacionActualizada = respuesta.publicacion;
@@ -156,5 +154,9 @@ export class Perfil implements OnInit {
 
   irAlFeed(): void {
     this.router.navigate(['/publicaciones']);
+  }
+
+  cerrarSesion() {
+  this.authService.cerrarSesion();
   }
 }

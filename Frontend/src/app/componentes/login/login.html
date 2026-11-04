@@ -15,9 +15,6 @@
                 <small *ngIf="loginModel.get('email')?.hasError('required') && loginModel.get('email')?.touched" class="error-msg" style="color: red; display: block; margin-top: 4px;">
                     El correo o usuario es obligatorio.
                 </small>
-                <small *ngIf="loginModel.get('email')?.hasError('email') && loginModel.get('email')?.touched" class="error-msg" style="color: red; display: block; margin-top: 4px;">
-                    El formato de correo no es válido.
-                </small>
             </div>
             <!-- Contraseña -->
             <div class="form-group">
@@ -57,7 +54,7 @@
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content shadow-lg border-0">
         <div class="modal-header text-white" [class.bg-success]="loginExitoso" [class.bg-danger]="!loginExitoso">
-            <h5 class="modal-title-grande">{{ loginExitoso ? '¡Bienvenido!' : 'Atención' }}</h5>
+            <h2 class="modal-title-grande">{{ loginExitoso ? '¡Bienvenido!' : 'Atención' }}</h2>
         </div>
             <div class="modal-body py-4 text-center">
                 <p class="fs-5 mb-0">{{ modalMensaje() }}</p>
