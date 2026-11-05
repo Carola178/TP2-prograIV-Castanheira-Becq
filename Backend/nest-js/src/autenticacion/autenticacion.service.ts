@@ -92,4 +92,20 @@ export class AutenticacionService {
         });
     }
 
+    async autorizar(idUsuario: string) {
+        const usuario = await this.usuarioModel.findById(idUsuario).select('-contrasena');
+        if (!usuario) {
+            throw new UnauthorizedException('Usuario no encontrado');
+        }
+        return usuario;
+    }
+
+    async refrescar(idUsuario: string) {
+        const usuario = await this.usuarioModel.findById(idUsuario);
+        if (!usuario) {
+            throw new UnauthorizedException('Usuario no encontrado');
+        }
+        return this.generateToken(usuario);
+    }
+
 }

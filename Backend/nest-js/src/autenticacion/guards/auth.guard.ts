@@ -1,42 +1,47 @@
-import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from "@nestjs/common";
-import { JwtService } from "@nestjs/jwt";
-import { Observable } from "rxjs";
+import {CanActivate, ExecutionContext, Injectable, UnauthorizedException} from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
 
     constructor(private readonly jwtService: JwtService) {}
 
-    canActivate(
-        contexto: ExecutionContext,
-    ): boolean | Promise<boolean> | Observable<boolean> {
-
-        const token = this.extractTokenFromCookie(contexto) || this.extractToken(contexto);
+    canActivate(contexto: ExecutionContext): boolean {
+        // Obtener la solicitud HTTP
+        const solicitud = contexto.switchToHttp().getRequest();
+        // Buscar el token primero en la cookie y luego en el header
+        const token =
+            this.extraerTokenDeCookie(contexto) ||
+            this.extraerTokenDeHeader(contexto);
 
         if (!token) {
-            throw new UnauthorizedException();
+            throw new UnauthorizedException('No se encontró un token');
         }
         try {
-            const payload = this.jwtService.verify(token);
-            debugger;
-            contexto.switchToHttp().getRequest().user = payload;
+            // Verificar que el JWT sea válido y no esté vencido
+            const datosUsuario = this.jwtService.verify(token);
+            // Guardar los datos del usuario autenticado en la solicitud
+            solicitud.usuarioAutenticado = datosUsuario;
             return true;
         } catch (error) {
-            throw new UnauthorizedException();
+            throw new UnauthorizedException('Token inválido o vencido');
         }
     }
 
-    extractToken(contexto: ExecutionContext): string | null {
-        console.log('Extrayendo token desde headers');
-        const authHeader = contexto.switchToHttp().getRequest().headers['authorization'];
-        if (!authHeader) return null;
-        const [type, token] = authHeader.split(' ');
-        return type === 'Bearer' ? token : null;
+    // Obtener el JWT desde el header Authorization
+    private extraerTokenDeHeader(contexto: ExecutionContext): string | null {
+        const solicitud = contexto.switchToHttp().getRequest();
+        const encabezadoAutorizacion = solicitud.headers['authorization'];
+        if (!encabezadoAutorizacion) {
+            return null;
+        }
+        const [tipo, token] = encabezadoAutorizacion.split(' ');
+        return tipo === 'Bearer' ? token : null;
     }
-
-    extractTokenFromCookie(contexto: ExecutionContext): string | null {
-        console.log('Extrayendo token desde cookies');
-        const token = contexto.switchToHttp().getRequest().cookies?.['Token'];
+    // Obtener el JWT desde la cookie
+    private extraerTokenDeCookie(contexto: ExecutionContext): string | null {
+        const solicitud = contexto.switchToHttp().getRequest();
+        const token = solicitud.cookies?.['Token'];
         return token || null;
     }
 }

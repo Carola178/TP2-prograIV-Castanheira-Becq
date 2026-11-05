@@ -2,7 +2,7 @@ import { Controller, Post, Body, Res, Get, Param, UseGuards, UseInterceptors, Up
 import { FileInterceptor } from '@nestjs/platform-express';
 import { memoryStorage } from 'multer';
 import { AutenticacionService } from './autenticacion.service.js';
-import { FileService } from '../documentos/file.service.js'; // Ajusta la ruta a tu FileService
+import { FileService } from '../documentos/file.service.js'; 
 import { CrearUsuarioDto } from './dto/create-usuario.dto.js';
 import { LoginDto } from './dto/login.dto.js';
 import type { Response } from 'express';
@@ -27,7 +27,6 @@ export class AutenticacionController {
         @Res({ passthrough: true }) res?: any
     ) {
         if (file) {
-            // Como 'perfiles' es el valor por defecto, puedes omitirlo o ponerlo explícito
             const secureUrl = await this.fileService.cloudinaryUploader(file, 'perfiles');
             crearUsuarioDto.imagenPerfil = secureUrl; 
         }
@@ -51,7 +50,7 @@ export class AutenticacionController {
 
     @Get('perfil/:id')
     @UseGuards(AuthGuard)
-    async validateToken(@Param('id') id: string) {
+    async obtenerPerfil(@Param('id') id: string) {
         return this.autenticacionService.getPerfil(id);
     }
 }
