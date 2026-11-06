@@ -57,43 +57,74 @@
             <h2>Mis Últimas Publicaciones</h2>
         </div>
 
-        @if (cargando) {
-            <div class="estado-vacio">
-                <p>Cargando perfil y publicaciones...</p>
-            </div>
-        } @else {
-            @if (publicaciones.length > 0) {
-                <div class="grid-publicaciones">
-                    @for (pub of publicaciones; track pub.id) {
-                        <article class="tarjeta-publicacion">
-                            <div class="autor-header">
-                                <span class="nombre-autor">{{ pub.nombreAutor || 'Usuario' }}</span>
-                            </div>
 
-                            <div class="contenido-publicacion">
-                                <h3>{{ pub.titulo }}</h3>
-                                <p>{{ pub.descripcion }}</p>
-                                @if (pub.urlImagen) {
-                                    <img [src]="pub.urlImagen" alt="Imagen de publicación" class="imagen-pub" />
-                                }
-                            </div>
+@if (cargando) {
+    <div class="estado-vacio">
+        <p>Cargando perfil y publicaciones...</p>
+    </div>
+} @else {
+    @if (publicaciones.length > 0) {
+        <div class="grid-publicaciones">
+            @for (pub of publicaciones; track pub.id) {
+                <article class="tarjeta-publicacion">
+                    <div class="autor-header">
+                        <span class="nombre-autor">
+                            {{ pub.nombreAutor || 'Usuario' }}
+                        </span>
+                    </div>
 
-                            <footer class="footer-publicacion">
-                                @if (pub.autor === idUsuarioActual) {
-                                    <button class="boton-eliminar" (click)="confirmarEliminacion(pub.id)">
-                                        🗑️ Eliminar
-                                    </button>
-                                }
-                            </footer>
-                        </article>
-                    }
-                </div>
-            } @else {
-                <div class="estado-vacio">
-                    <p>Aún no realizaste ninguna publicación.</p>
-                </div>
+                    <div class="contenido-publicacion">
+                        <h3>{{ pub.titulo }}</h3>
+                        <p>{{ pub.descripcion }}</p>
+
+                        @if (pub.urlImagen) {
+                            <img
+                                [src]="pub.urlImagen"
+                                alt="Imagen de publicación"
+                                class="imagen-pub"
+                            />
+                        }
+                    </div>
+
+                    <footer class="footer-publicacion">
+                        @if (pub.autor === idUsuarioActual) {
+                            <button
+                                class="boton-eliminar"
+                                (click)="confirmarEliminacion(pub.id)">
+                                🗑️ Eliminar
+                            </button>
+                        }
+                    </footer>
+                </article>
             }
-        }
+        </div>
+    } @else {
+        <div class="estado-vacio">
+            <p>Aún no realizaste ninguna publicación.</p>
+        </div>
+    }
 
-    </section>
+
+@if (totalPaginas > 1) {
+    <nav class="paginador">
+        <button
+            [disabled]="paginaActual === 1"
+            (click)="cambiarPagina(paginaActual - 1)">
+            Anterior
+        </button>
+
+        <span>
+            Página {{ paginaActual }} de {{ totalPaginas }}
+        </span>
+
+        <button
+            [disabled]="paginaActual === totalPaginas"
+            (click)="cambiarPagina(paginaActual + 1)">
+            Siguiente
+        </button>
+    </nav>
+    }
+}
+
+</section>
 </main>

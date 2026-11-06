@@ -8,7 +8,7 @@ import { EditarComentarioDto } from './dto/editar-comentario.dto.js';
 @UseGuards(AuthGuard)
 export class ComentariosController {
 
-  constructor(
+    constructor(
     private readonly comentariosService: ComentariosService) {}
 
     @Post()

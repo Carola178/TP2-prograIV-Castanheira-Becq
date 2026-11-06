@@ -217,3 +217,35 @@
     border-color: #fca5a5;
     color: #dc2626;
 }
+
+
+/* Paginador del perfil: mismo estilo que Publicaciones */
+
+.paginador {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 16px;
+    margin-top: 30px;
+}
+
+.paginador button {
+    padding: 8px 16px;
+    background-color: #7c3aed;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.paginador button:disabled {
+    background-color: #e5e7eb;
+    color: #9ca3af;
+    cursor: not-allowed;
+}
+
+.paginador span {
+    font-weight: 500;
+    color: #374151;
+}

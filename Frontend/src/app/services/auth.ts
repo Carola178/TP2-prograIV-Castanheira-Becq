@@ -4,10 +4,6 @@ import { Router } from '@angular/router';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
 import { environment } from '../../environments/environment'; 
 
-export interface AuthResponse {
-  access_token: string;
-  user?: any;
-}
 
 @Injectable({
   providedIn: 'root'
@@ -18,17 +14,26 @@ export class Auth {
 
   private apiUrl = `${environment.apiUrl}/autenticacion`; 
 
-  private currentUserSubject = new BehaviorSubject<any>(this.getStoredUser());
+  private currentUserSubject = new BehaviorSubject<any>(null);
   public currentUser$: Observable<any> = this.currentUserSubject.asObservable();
+  
+private vencimientoSubject = new BehaviorSubject<number | null>(null);
 
-  constructor() {}
+public vencimiento$ = this.vencimientoSubject.asObservable();
 
-  private getStoredUser() {
-    const userJson = localStorage.getItem('user');
-    return userJson ? JSON.parse(userJson) : null;
+  actualizarVencimiento(expiraEn: number): void {
+    this.vencimientoSubject.next(expiraEn);
   }
 
 
+  get usuarioActual(): any {
+    return this.currentUserSubject.value;
+  }
+
+  constructor() {}
+
+
+  
   login(email: string, contrasena: string): Observable<any> {
     return this.http.post<any>(
       `${this.apiUrl}/login`,
@@ -36,13 +41,14 @@ export class Auth {
       { withCredentials: true }
     ).pipe(
       tap(response => {
-        if (response && response.usuario) {
-          localStorage.setItem('user', JSON.stringify(response.usuario));
+        if (response?.usuario) {
           this.currentUserSubject.next(response.usuario);
+          this.actualizarVencimiento(response.expiraEn);
         }
       })
     );
   }
+
 
   registro(datosRegistro: any, imagenFile?: File): Observable<any> {
       const formData = new FormData();
@@ -62,20 +68,65 @@ export class Auth {
         formData,
         { withCredentials: true }
       ).pipe(
-        tap(response => {
-          if (response && response.usuario) {
-            localStorage.setItem('user', JSON.stringify(response.usuario));
-            this.currentUserSubject.next(response.usuario);
-          }
-        })
+      tap(response => {
+        if (response?.usuario) {
+          this.currentUserSubject.next(response.usuario);
+          this.actualizarVencimiento(response.expiraEn);
+        }
+      })
       );
     }
     
-    cerrarSesion(): void {
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-      this.currentUserSubject.next(null);
-      this.router.navigate(['/login']);
+    
+  cerrarSesion(): void {
+    this.http.post(
+      `${this.apiUrl}/logout`,
+      {},
+      { withCredentials: true }
+    ).subscribe({
+      next: () => {
+        this.limpiarSesion();
+        this.router.navigate(['/login']);
+      },
+      error: (err) => {
+        console.error('Error al cerrar sesión:', err);
+      }
+    });
+  }
+
+  
+  autorizar(): Observable<any> {
+    return this.http.post<any>(
+      `${this.apiUrl}/autorizar`,
+      {},
+      { withCredentials: true }
+    ).pipe(
+      tap(response => {
+        this.currentUserSubject.next(response.usuario);
+        this.actualizarVencimiento(response.expiraEn);
+      })
+    );
+  }
+
+  
+  refrescar(): Observable<any> {
+    return this.http.post<any>(
+      `${this.apiUrl}/refrescar`,
+      {},
+      { withCredentials: true }
+    ).pipe(
+      tap(response => {
+        if (response?.usuario) {
+          this.currentUserSubject.next(response.usuario);
+          this.actualizarVencimiento(response.expiraEn);
+        }
+      })
+    );
+  }
+
+  limpiarSesion(): void {
+    this.currentUserSubject.next(null);
+    this.vencimientoSubject.next(null);
   }
 
   getPerfil(id: string): Observable<any> {

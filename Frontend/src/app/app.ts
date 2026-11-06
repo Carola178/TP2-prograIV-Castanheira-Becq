@@ -1,12 +1,136 @@
-import { Component, signal } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import {ChangeDetectorRef, Component, OnInit, OnDestroy, signal} from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Router, RouterOutlet } from '@angular/router';
+import { Subscription } from 'rxjs';
+import { Auth } from './services/auth';
 
 @Component({
-  imports: [RouterOutlet],
   selector: 'app-root',
+  standalone: true,
+  imports: [CommonModule, RouterOutlet],
   styleUrl: './app.css',
   templateUrl: './app.html',
 })
-export class App {
+export class App implements OnInit, OnDestroy {
   protected readonly title = signal('frontend');
+
+  cargandoSesion = true;
+  mostrarModalSesion = false;
+
+  private temporizadorAviso?: ReturnType<typeof setTimeout>;
+  private temporizadorVencimiento?: ReturnType<typeof setTimeout>;
+  private suscripcionVencimiento?: Subscription;
+
+  private readonly tiempoRestanteAviso = 5 * 60 * 1000;
+  // private readonly tiempoRestanteAviso = 14 * 60 * 1000 + 50 * 1000;
+
+  constructor(
+    private authService: Auth,
+    private router: Router,
+    private cdr: ChangeDetectorRef
+  ) {}
+
+  ngOnInit(): void {
+    const rutaInicial = window.location.pathname;
+
+    this.suscripcionVencimiento =
+      this.authService.vencimiento$.subscribe(expiraEn => {
+        if (expiraEn === null) {
+          this.detenerTemporizador();
+        } else {
+          this.programarTemporizadores(expiraEn);
+        }
+      });
+
+    this.authService.autorizar().subscribe({
+      next: () => {
+        this.cargandoSesion = false;
+        this.cdr.detectChanges();
+
+        if (rutaInicial === '/' || rutaInicial === '/login') {
+          this.router.navigate(['/publicaciones']);
+        }
+      },
+      error: () => {
+        this.cargandoSesion = false;
+        this.cdr.detectChanges();
+        this.router.navigate(['/login']);
+      }
+    });
+  }
+
+  programarTemporizadores(expiraEn: number): void {
+    this.detenerTemporizador();
+
+    const ahora = Date.now();
+
+    const tiempoHastaAviso =
+      expiraEn - ahora - this.tiempoRestanteAviso;
+
+    const tiempoHastaVencimiento =
+      expiraEn - ahora;
+
+    if (tiempoHastaVencimiento <= 0) {
+      this.finalizarSesion();
+      return;
+    }
+
+    if (tiempoHastaAviso > 0) {
+      this.temporizadorAviso = setTimeout(() => {
+        this.mostrarModalSesion = true;
+        this.cdr.detectChanges();
+      }, tiempoHastaAviso);
+    } else {
+      this.mostrarModalSesion = true;
+      this.cdr.detectChanges();
+    }
+
+    this.temporizadorVencimiento = setTimeout(() => {
+      this.finalizarSesion();
+    }, tiempoHastaVencimiento);
+  }
+
+  detenerTemporizador(): void {
+    if (this.temporizadorAviso) {
+      clearTimeout(this.temporizadorAviso);
+      this.temporizadorAviso = undefined;
+    }
+
+    if (this.temporizadorVencimiento) {
+      clearTimeout(this.temporizadorVencimiento);
+      this.temporizadorVencimiento = undefined;
+    }
+
+    this.mostrarModalSesion = false;
+  }
+
+  cancelarRenovacion(): void {
+    this.detenerTemporizador();
+    this.authService.cerrarSesion();
+  }
+
+  extenderSesion(): void {
+    this.authService.refrescar().subscribe({
+      next: () => {
+        this.mostrarModalSesion = false;
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('Error al renovar sesión:', err);
+        this.finalizarSesion();
+      }
+    });
+  }
+
+  finalizarSesion(): void {
+    this.detenerTemporizador();
+    this.authService.limpiarSesion();
+    this.router.navigate(['/login']);
+    this.cdr.detectChanges();
+  }
+
+  ngOnDestroy(): void {
+    this.detenerTemporizador();
+    this.suscripcionVencimiento?.unsubscribe();
+  }
 }

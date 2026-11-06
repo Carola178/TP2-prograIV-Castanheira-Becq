@@ -72,13 +72,32 @@ export class AutenticacionService {
         return user;
     }
 
+    
     async generateToken(usuario: UsuarioDocument) {
-        const payload = { email: usuario.email, sub: usuario._id, perfil: usuario.perfil };
-        const token = await this.jwtService.signAsync(payload, { expiresIn: '15m' });
-        return { token, usuario };
+        const payload = {
+            email: usuario.email,
+            sub: usuario._id.toString(),
+            perfil: usuario.perfil
+        };
+
+        const token = await this.jwtService.signAsync(payload, {
+            expiresIn: '15m'
+        });
+
+        const tokenDecodificado = this.jwtService.decode(token) as {
+            exp: number;
+        };
+
+        const expiraEn = tokenDecodificado.exp * 1000;
+
+        const { contrasena, ...usuarioSeguro } = usuario.toObject();
+
+        return {
+            token,
+            usuario: usuarioSeguro,
+            expiraEn
+        };
     }
-
-
 
     setTokenCookie(res: Response, token: string) {
         const esProduccion = process.env.NODE_ENV === 'production';

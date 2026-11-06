@@ -55,21 +55,21 @@ export class Login implements OnInit {
 
     const { email, password } = this.loginModel.getRawValue();
     
-    this.auth.login(email, password).subscribe({
-      next: (response) => {
-        console.log('Login exitoso:', response);
-        this.loginExitoso = true;
-        this.modalMensaje.set('¡Has iniciado sesión correctamente!');
-        this.isModalOpen.set(true);
-        this.cdr.detectChanges(); 
-      },
-      error: (error) => {
-        console.error('Error en el login', error);
-        this.loginExitoso = false;
-        this.modalMensaje.set('Las credenciales son incorrectas. Inténtelo nuevamente.');
-        this.isModalOpen.set(true);
-        this.cdr.detectChanges(); 
-      }
-    });
+  this.auth.login(email, password).subscribe({
+    next: () => {
+      console.log('Login exitoso');
+      this.loginExitoso = true;
+      this.modalMensaje.set('¡Has iniciado sesión correctamente!');
+      this.isModalOpen.set(true);
+      this.cdr.detectChanges();
+    },
+    error: (error) => {
+      console.error('Error en el login', error);
+      this.loginExitoso = false;
+      this.modalMensaje.set('Las credenciales son incorrectas. Inténtelo nuevamente.');
+      this.isModalOpen.set(true);
+      this.cdr.detectChanges();
+    }
+  });
   }
 }

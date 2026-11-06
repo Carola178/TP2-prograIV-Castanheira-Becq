@@ -64,7 +64,6 @@ export class Publicaciones implements OnInit {
     this.cargarPublicaciones();
   }
 
-
   cargarPublicaciones(): void {
     this.offset = (this.paginaActual - 1) * this.limite;
 
@@ -127,19 +126,19 @@ export class Publicaciones implements OnInit {
       }
     });
   }
-
+  
   obtenerUsuarioLogueado(): void {
-    const usuarioGuardado = localStorage.getItem('user');
-    if (usuarioGuardado) {
-      try {
-        const usuario = JSON.parse(usuarioGuardado);
-        this.idUsuarioActual = String(usuario.id || usuario._id);
-      } catch (e) {
-        console.error('Error al leer el usuario del localStorage', e);
-      }
+    const usuario = this.authService.usuarioActual;
+
+    this.idUsuarioActual = String(
+      usuario?._id || usuario?.id || usuario?.sub || ''
+    );
+
+    if (!this.idUsuarioActual) {
+      console.error('No se encontró un usuario autenticado');
+      this.router.navigate(['/login']);
     }
   }
-
   cambiarOrden(evento: Event): void {
     const seleccion = (evento.target as HTMLSelectElement).value as 'fechaCreacion' | 'cantidadMeGusta';
     this.criterioOrden = seleccion;
@@ -273,7 +272,13 @@ export class Publicaciones implements OnInit {
       },
       error: (err) => {
         console.error('Error al modificar el Me gusta:', err);
-        alert('No se pudo registrar el Me gusta. Inténtalo nuevamente.');
+        if (err.status === 401) {
+          return;
+        }
+
+        this.mensajeErrorModal = 'No se pudo registrar el Me gusta. Inténtalo nuevamente.';
+        this.mostrarModalError = true;
+        this.cdr.detectChanges();
       }
     });
   }
@@ -299,8 +304,15 @@ export class Publicaciones implements OnInit {
       },
       error: (err) => {
         console.error('Error al eliminar la publicación:', err);
-        alert('No se pudo eliminar la publicación. Inténtalo de nuevo.');
         this.cancelarEliminacion();
+
+        if (err.status === 401) {
+          return;
+        }
+        this.mensajeErrorModal =
+          'No se pudo eliminar la publicación. Inténtalo de nuevo.';
+        this.mostrarModalError = true;
+        this.cdr.detectChanges();
       }
     });
   }

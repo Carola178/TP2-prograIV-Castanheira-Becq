@@ -10,9 +10,7 @@ export class AuthGuard implements CanActivate {
         // Obtener la solicitud HTTP
         const solicitud = contexto.switchToHttp().getRequest();
         // Buscar el token primero en la cookie y luego en el header
-        const token =
-            this.extraerTokenDeCookie(contexto) ||
-            this.extraerTokenDeHeader(contexto);
+        const token = this.extraerTokenDeCookie(contexto);
 
         if (!token) {
             throw new UnauthorizedException('No se encontró un token');
@@ -26,17 +24,6 @@ export class AuthGuard implements CanActivate {
         } catch (error) {
             throw new UnauthorizedException('Token inválido o vencido');
         }
-    }
-
-    // Obtener el JWT desde el header Authorization
-    private extraerTokenDeHeader(contexto: ExecutionContext): string | null {
-        const solicitud = contexto.switchToHttp().getRequest();
-        const encabezadoAutorizacion = solicitud.headers['authorization'];
-        if (!encabezadoAutorizacion) {
-            return null;
-        }
-        const [tipo, token] = encabezadoAutorizacion.split(' ');
-        return tipo === 'Bearer' ? token : null;
     }
     // Obtener el JWT desde la cookie
     private extraerTokenDeCookie(contexto: ExecutionContext): string | null {

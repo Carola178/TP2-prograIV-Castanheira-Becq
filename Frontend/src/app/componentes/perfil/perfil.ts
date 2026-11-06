@@ -9,17 +9,18 @@ export interface Publicacion {
   titulo: string;
   descripcion: string;
   urlImagen?: string;
-  autor: string; 
+  autor: string;
   nombreAutor?: string;
   avatarAutor?: string;
   cantidadMeGusta: number;
   leGustaAlUsuarioActual: boolean;
   cantidadComentarios?: number;
-  createdAt: string; 
+  createdAt: string;
 }
 
 @Component({
   selector: 'app-perfil',
+  standalone: true,
   templateUrl: './perfil.html',
   styleUrls: ['./perfil.css'],
   imports: [CommonModule]
@@ -27,12 +28,13 @@ export interface Publicacion {
 export class Perfil implements OnInit {
   usuario: any = null;
   publicaciones: Publicacion[] = [];
+
   paginaActual: number = 1;
   totalPaginas: number = 1;
   idUsuarioActual: string = '';
   cargando: boolean = true;
 
-  limite: number = 10;
+  limite: number = 3;
   offset: number = 0;
 
   constructor(
@@ -47,73 +49,112 @@ export class Perfil implements OnInit {
   }
 
   obtenerDatosPerfilYPublicaciones(): void {
-    const userJson = localStorage.getItem('user');
-    const userStorage = userJson ? JSON.parse(userJson) : null;
-    this.idUsuarioActual = userStorage?._id || userStorage?.id || userStorage?.sub || '';
+    const usuarioActual = this.authService.usuarioActual;
+
+    this.idUsuarioActual = String(
+      usuarioActual?._id || usuarioActual?.id || usuarioActual?.sub || ''
+    );
 
     if (!this.idUsuarioActual) {
-      console.error('No se encontró el ID del usuario en localStorage');
+      console.error('No se encontró un usuario autenticado');
       this.cargando = false;
+      this.router.navigate(['/login']);
       return;
     }
 
     this.authService.getPerfil(this.idUsuarioActual).subscribe({
-      next: (userFrescos: any) => {
-        this.usuario = userFrescos;
+      next: (usuario: any) => {
+        this.usuario = usuario;
         this.cargarPublicacionesUsuario();
       },
       error: (err: any) => {
-        console.error('Error al obtener perfil del backend, usando caché:', err);
-        this.usuario = userStorage;
-        this.cargarPublicacionesUsuario();
+        console.error('Error al obtener el perfil:', err);
+        this.cargando = false;
+        this.cdr.detectChanges();
+
+        if (err.status === 401) {
+          this.router.navigate(['/login']);
+        }
       }
     });
   }
 
   cargarPublicacionesUsuario(): void {
+    this.cargando = true;
+
     this.offset = (this.paginaActual - 1) * this.limite;
 
     this.publicacionesService.obtenerPublicaciones({
       idUsuario: this.idUsuarioActual,
+      ordenarPor: 'fechaCreacion',
       limite: this.limite,
       offset: this.offset
     }).subscribe({
       next: (data: any) => {
-        const lista = Array.isArray(data) ? data : (data.datos || data.publicaciones || data.docs || []);
-        const totalRegistros = data.totalDocs || data.total || lista.length;
-        this.totalPaginas = Math.ceil(totalRegistros / this.limite) || 1;
+        const lista = Array.isArray(data)
+          ? data
+          : (data?.datos || data?.publicaciones || data?.docs || []);
 
-        this.publicaciones = lista.map((pub: any) => {
-          return {
-            id: pub._id || pub.id,
-            titulo: pub.titulo,
-            descripcion: pub.descripcion,
-            urlImagen: pub.urlImagen,
-            autor: typeof pub.autor === 'object' && pub.autor !== null 
-              ? String(pub.autor._id || pub.autor.id) 
+        const totalRegistros =
+          data?.totalDocs ?? data?.total ?? lista.length;
+
+        this.totalPaginas =
+          Math.max(1, Math.ceil(totalRegistros / this.limite));
+
+        this.publicaciones = lista.map((pub: any) => ({
+          id: pub._id || pub.id,
+          titulo: pub.titulo,
+          descripcion: pub.descripcion,
+          urlImagen: pub.urlImagen,
+
+          autor:
+            typeof pub.autor === 'object' && pub.autor !== null
+              ? String(pub.autor._id || pub.autor.id)
               : String(pub.autor),
-            nombreAutor: pub.autor && typeof pub.autor === 'object' ? `${pub.autor.nombre} ${pub.autor.apellido || ''}`.trim() : (this.usuario?.nombre || 'Usuario'),
-            avatarAutor: pub.autor && typeof pub.autor === 'object' ? pub.autor.imagenPerfil : '',
-            cantidadMeGusta: pub.cantidadMeGusta || 0,
-            leGustaAlUsuarioActual: pub.leGustaAlUsuarioActual || false,
-            cantidadComentarios: pub.cantidadComentarios || 0,
-            createdAt: pub.createdAt || new Date().toISOString()
-          };
-        });
+
+          nombreAutor:
+            pub.autor && typeof pub.autor === 'object'
+              ? `${pub.autor.nombre || ''} ${pub.autor.apellido || ''}`.trim()
+              : (this.usuario?.nombre || 'Usuario'),
+
+          avatarAutor:
+            pub.autor && typeof pub.autor === 'object'
+              ? pub.autor.imagenPerfil
+              : '',
+
+          cantidadMeGusta: pub.cantidadMeGusta || 0,
+          leGustaAlUsuarioActual:
+            pub.leGustaAlUsuarioActual || false,
+          cantidadComentarios: pub.cantidadComentarios || 0,
+          createdAt: pub.createdAt || ''
+        }));
 
         this.cargando = false;
         this.cdr.detectChanges();
       },
+
       error: (err) => {
-        console.error('Error al cargar publicaciones del perfil:', err);
+        console.error(
+          'Error al cargar publicaciones del perfil:',
+          err
+        );
+
         this.cargando = false;
         this.cdr.detectChanges();
+
+        if (err.status === 401) {
+          this.router.navigate(['/login']);
+        }
       }
     });
   }
 
   cambiarPagina(nuevaPagina: number): void {
-    if (nuevaPagina >= 1 && nuevaPagina <= this.totalPaginas) {
+    if (
+      nuevaPagina >= 1 &&
+      nuevaPagina <= this.totalPaginas &&
+      nuevaPagina !== this.paginaActual
+    ) {
       this.paginaActual = nuevaPagina;
       this.cargarPublicacionesUsuario();
     }
@@ -123,13 +164,20 @@ export class Perfil implements OnInit {
     const accion = publicacion.leGustaAlUsuarioActual
       ? this.publicacionesService.quitarMeGusta(publicacion.id)
       : this.publicacionesService.darMeGusta(publicacion.id);
+
     accion.subscribe({
       next: (respuesta: any) => {
         const publicacionActualizada = respuesta.publicacion;
-        publicacion.cantidadMeGusta = publicacionActualizada.cantidadMeGusta;
-        publicacion.leGustaAlUsuarioActual = !publicacion.leGustaAlUsuarioActual;
+
+        publicacion.cantidadMeGusta =
+          publicacionActualizada.cantidadMeGusta;
+
+        publicacion.leGustaAlUsuarioActual =
+          !publicacion.leGustaAlUsuarioActual;
+
         this.cdr.detectChanges();
       },
+
       error: (err) => {
         console.error('Error al modificar el Me gusta:', err);
         alert('No se pudo registrar el Me gusta. Inténtalo nuevamente.');
@@ -138,17 +186,33 @@ export class Perfil implements OnInit {
   }
 
   confirmarEliminacion(idPublicacion: string): void {
-    if (confirm('¿Estás seguro de que deseas eliminar esta publicación?')) {
-      this.publicacionesService.eliminarPublicacion(idPublicacion).subscribe({
-        next: () => {
-          this.publicaciones = this.publicaciones.filter(p => p.id !== idPublicacion);
-          this.cdr.detectChanges();
-        },
-        error: (err) => {
-          console.error('Error al eliminar la publicación:', err);
-          alert('No se pudo eliminar la publicación. Inténtalo de nuevo.');
-        }
-      });
+    if (
+      confirm('¿Estás seguro de que deseas eliminar esta publicación?')
+    ) {
+      this.publicacionesService
+        .eliminarPublicacion(idPublicacion)
+        .subscribe({
+          next: () => {
+            if (
+              this.publicaciones.length === 1 &&
+              this.paginaActual > 1
+            ) {
+              this.paginaActual--;
+            }
+            this.cargarPublicacionesUsuario();
+          },
+
+          error: (err) => {
+            console.error(
+              'Error al eliminar la publicación:',
+              err
+            );
+
+            alert(
+              'No se pudo eliminar la publicación. Inténtalo de nuevo.'
+            );
+          }
+        });
     }
   }
 
@@ -156,7 +220,7 @@ export class Perfil implements OnInit {
     this.router.navigate(['/publicaciones']);
   }
 
-  cerrarSesion() {
-  this.authService.cerrarSesion();
+  cerrarSesion(): void {
+    this.authService.cerrarSesion();
   }
 }

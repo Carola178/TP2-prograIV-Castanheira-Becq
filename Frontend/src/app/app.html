@@ -1,3 +1,37 @@
+@if (cargandoSesion) {
+    <div class="pantalla-carga">
+        <div class="spinner"></div>
+        <p>Verificando sesión...</p>
+    </div>
+    }
 
+    <div [hidden]="cargandoSesion">
+    <router-outlet />
+    </div>
 
-<router-outlet />
+    @if (mostrarModalSesion) {
+    <div class="modal-sesion-overlay">
+        <div class="modal-sesion">
+        <h2>Tu sesión está por vencer</h2>
+
+        <p>
+            Tu sesión está próxima a finalizar.
+            ¿Querés extenderla por 15 minutos más?
+        </p>
+
+        <div class="modal-sesion-acciones">
+        <button
+        class="boton-cancelar"
+        (click)="cancelarRenovacion()">
+        Cancelar
+        </button>
+        
+            <button
+            class="boton-extender"
+            (click)="extenderSesion()">
+            Extender sesión
+            </button>
+        </div>
+        </div>
+    </div>
+}
