@@ -1,0 +1,553 @@
+
+/* =========================================
+   COMENTARIOS - PATITAS AL REFUGIO
+========================================= */
+
+:host {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+.pagina-comentarios {
+    width: 100%;
+    min-height: 100vh;
+    background-color: #F8F7FA;
+    color: #2D3142;
+    font-family: inherit;
+}
+
+/* =========================================
+   ENCABEZADO - PAGINA INDIVIDUAL
+========================================= */
+
+.encabezado-comentarios {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 16px 24px;
+    background-color: #8878E6;
+    color: #FFFFFF;
+}
+
+.encabezado-comentarios h2 {
+    margin: 0;
+    font-size: 1.3rem;
+    font-weight: 700;
+}
+
+.encabezado-comentarios button {
+    padding: 10px 18px;
+    background-color: #FFFFFF;
+    color: #6558A9;
+    border: none;
+    border-radius: 9px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.encabezado-comentarios button:hover {
+    background-color: #F0EDFF;
+}
+
+/* =========================================
+   CONTENEDOR PRINCIPAL
+========================================= */
+
+.contenedor-comentarios {
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 24px 16px;
+}
+
+/* =========================================
+   PUBLICACION INDIVIDUAL
+========================================= */
+
+.publicacion-detalle {
+    padding: 24px;
+    margin-bottom: 24px;
+    background-color: #FFFFFF;
+    border: 1px solid #EAE6FA;
+    border-radius: 16px;
+    box-shadow: 0 4px 15px rgba(100, 85, 160, 0.06);
+}
+
+.autor-publicacion {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.autor-publicacion strong {
+    font-size: 1rem;
+    color: #2D3142;
+}
+
+.autor-publicacion span {
+    color: #85839A;
+    font-size: 0.8rem;
+}
+
+.publicacion-detalle h2 {
+    font-size: 1.5rem;
+    margin: 0 0 12px;
+}
+
+.publicacion-detalle p {
+    line-height: 1.6;
+    overflow-wrap: anywhere;
+}
+
+.imagen-publicacion {
+    display: block;
+    width: 100%;
+    max-height: 550px;
+    object-fit: contain;
+    border-radius: 12px;
+    margin-top: 16px;
+}
+
+.me-gusta-publicacion {
+    padding-top: 16px;
+    margin-top: 16px;
+    border-top: 1px solid #EEEAF8;
+    color: #6558A9;
+    font-weight: 600;
+}
+
+/* =========================================
+   SECCION COMENTARIOS
+========================================= */
+
+.seccion-comentarios {
+    width: 100%;
+    padding: 24px;
+    background-color: #FAF9FF;
+    border: 1px solid #EAE6FA;
+    border-radius: 16px;
+    box-shadow: 0 3px 12px rgba(100, 85, 160, 0.04);
+}
+
+.seccion-comentarios h3 {
+    margin: 0 0 20px;
+    color: #2D3142;
+    font-size: 1.2rem;
+    font-weight: 700;
+}
+
+/* =========================================
+   FORMULARIO PARA COMENTAR
+========================================= */
+
+.formulario-comentario {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+    width: 100%;
+    margin-bottom: 24px;
+    padding-bottom: 22px;
+    border-bottom: 1px solid #EAE6FA;
+}
+
+.formulario-comentario textarea,
+.tarjeta-comentario textarea {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    min-height: 105px;
+    padding: 14px 16px;
+    background-color: #FFFFFF;
+    border: 1px solid #DCD5F5;
+    border-radius: 12px;
+    color: #2D3142;
+    font-family: inherit;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    resize: vertical;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.formulario-comentario textarea::placeholder {
+    color: #9691AA;
+}
+
+.formulario-comentario textarea:focus,
+.tarjeta-comentario textarea:focus {
+    border-color: #8878E6;
+    box-shadow: 0 0 0 3px rgba(136, 120, 230, 0.12);
+}
+
+/* BOTON AÑADIR COMENTARIO */
+
+.formulario-comentario button {
+    align-self: flex-end;
+    width: auto;
+    min-height: 42px;
+    padding: 11px 20px;
+    background-color: #8878E6;
+    color: #FFFFFF;
+    border: none;
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.2s;
+}
+
+.formulario-comentario button:hover:not(:disabled) {
+    background-color: #7262D1;
+    transform: translateY(-1px);
+}
+
+.formulario-comentario button:disabled {
+    background-color: #C5BEF2;
+    color: #FFFFFF;
+    cursor: not-allowed;
+    opacity: 0.8;
+}
+
+/* =========================================
+   TARJETAS DE COMENTARIOS
+========================================= */
+
+.tarjeta-comentario {
+    width: 100%;
+    padding: 16px;
+    margin-bottom: 12px;
+    background-color: #FFFFFF;
+    border: 1px solid #EEEAF8;
+    border-radius: 12px;
+    transition: box-shadow 0.2s ease;
+}
+
+.tarjeta-comentario:hover {
+    box-shadow: 0 3px 12px rgba(136, 120, 230, 0.08);
+}
+
+.cabecera-comentario {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+.usuario-comentario {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+}
+
+.usuario-comentario strong {
+    font-size: 0.92rem;
+    font-weight: 700;
+    color: #2D3142;
+    overflow-wrap: anywhere;
+}
+
+.cabecera-comentario > span {
+    font-size: 0.75rem;
+    color: #9691AA;
+}
+
+/* AVATARES */
+
+.avatar-comentario,
+.avatar-placeholder {
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+    border-radius: 50%;
+}
+
+.avatar-comentario {
+    object-fit: cover;
+    border: 2px solid #EAE6FA;
+}
+
+.avatar-placeholder {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #EAE6FA;
+    color: #6558A9;
+    font-size: 1.1rem;
+}
+
+/* MENSAJE */
+
+.tarjeta-comentario p {
+    margin: 8px 0;
+    color: #45445A;
+    font-size: 0.94rem;
+    line-height: 1.6;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+.comentario-editado {
+    display: inline-block;
+    margin: 4px 0;
+    color: #9691AA;
+    font-size: 0.75rem;
+    font-style: italic;
+}
+
+/* =========================================
+   EDITAR COMENTARIO
+========================================= */
+
+.boton-editar {
+    display: block;
+    width: fit-content;
+    margin-top: 10px;
+    padding: 6px 10px;
+    background-color: transparent;
+    color: #7565C9;
+    border: none;
+    border-radius: 7px;
+    font-family: inherit;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.boton-editar:hover {
+    background-color: #F0EDFF;
+}
+
+.tarjeta-comentario textarea {
+    min-height: 85px;
+    margin: 12px 0;
+}
+
+.acciones-edicion {
+    display: flex;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.acciones-edicion button {
+    padding: 9px 16px;
+    border: none;
+    border-radius: 9px;
+    font-family: inherit;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.acciones-edicion button:first-child {
+    background-color: #8878E6;
+    color: #FFFFFF;
+}
+
+.acciones-edicion button:last-child {
+    background-color: #F0EDFF;
+    color: #6558A9;
+}
+
+.acciones-edicion button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* =========================================
+   CARGAR MAS COMENTARIOS
+========================================= */
+
+.boton-cargar-mas {
+    display: block;
+    width: fit-content;
+    margin: 20px auto 0;
+    padding: 10px 20px;
+    background-color: #FFFFFF;
+    color: #7565C9;
+    border: 1px solid #DCD5F5;
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.boton-cargar-mas:hover {
+    background-color: #F0EDFF;
+    border-color: #8878E6;
+}
+
+/* =========================================
+   MENSAJES DE ERROR
+========================================= */
+
+.mensaje-error {
+    padding: 12px 16px;
+    margin-top: 14px;
+    background-color: #FFF1F2;
+    border: 1px solid #FECDD3;
+    border-radius: 10px;
+    color: #BE123C;
+    font-size: 0.9rem;
+    overflow-wrap: anywhere;
+}
+
+/* =========================================
+   MODO INTEGRADO DENTRO DEL FEED
+========================================= */
+
+.pagina-comentarios.modo-integrado {
+    min-height: 0;
+    background: transparent;
+}
+
+.modo-integrado .contenedor-comentarios {
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+.modo-integrado .seccion-comentarios {
+    margin-top: 12px;
+    padding: 20px;
+    border-radius: 14px;
+    background-color: #FAF9FF;
+    box-shadow: none;
+}
+
+/* =========================================
+   RESPONSIVE - TABLETS
+========================================= */
+
+@media (max-width: 768px) {
+
+    .contenedor-comentarios {
+        padding: 16px 12px;
+    }
+
+    .seccion-comentarios {
+        padding: 18px;
+    }
+
+    .publicacion-detalle {
+        padding: 18px;
+    }
+
+    .publicacion-detalle h2 {
+        font-size: 1.3rem;
+    }
+
+    .encabezado-comentarios {
+        padding: 14px 16px;
+    }
+
+    .modo-integrado .seccion-comentarios {
+        padding: 16px;
+    }
+}
+
+/* =========================================
+   RESPONSIVE - CELULARES
+========================================= */
+
+@media (max-width: 480px) {
+
+    .contenedor-comentarios {
+        padding: 12px 8px;
+    }
+
+    .seccion-comentarios {
+        padding: 14px;
+        border-radius: 12px;
+    }
+
+    .modo-integrado .seccion-comentarios {
+        padding: 12px;
+        margin-top: 10px;
+    }
+
+    .seccion-comentarios h3 {
+        font-size: 1.05rem;
+        margin-bottom: 16px;
+    }
+
+    .formulario-comentario textarea {
+        min-height: 90px;
+        font-size: 0.9rem;
+    }
+
+    .formulario-comentario button {
+        width: 100%;
+        align-self: stretch;
+        font-size: 0.88rem;
+    }
+
+    .tarjeta-comentario {
+        padding: 12px;
+    }
+
+    .cabecera-comentario {
+        align-items: flex-start;
+        gap: 8px;
+    }
+
+    .cabecera-comentario > span {
+        width: 100%;
+        padding-left: 50px;
+    }
+
+    .avatar-comentario,
+    .avatar-placeholder {
+        width: 36px;
+        height: 36px;
+    }
+
+    .tarjeta-comentario p {
+        font-size: 0.88rem;
+    }
+
+    .acciones-edicion {
+        flex-direction: column;
+    }
+
+    .acciones-edicion button {
+        width: 100%;
+    }
+
+    .encabezado-comentarios h2 {
+        font-size: 1.05rem;
+    }
+
+    .encabezado-comentarios button {
+        font-size: 0.8rem;
+        padding: 8px 12px;
+    }
+
+    .publicacion-detalle {
+        padding: 14px;
+    }
+
+    .boton-cargar-mas {
+        width: 100%;
+        text-align: center;
+    }
+}

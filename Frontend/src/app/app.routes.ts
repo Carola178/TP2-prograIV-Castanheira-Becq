@@ -26,6 +26,12 @@ export const routes: Routes = [
         import('./componentes/perfil/perfil').then(m => m.Perfil)
     },
     {
+        path: 'publicaciones/:id/comentarios',
+        canActivate: [authGuard],
+        loadComponent: () =>
+            import('./componentes/comentarios/comentarios').then(m => m.Comentarios)
+    },
+    {
         path: '',
         redirectTo: 'login',
         pathMatch: 'full'

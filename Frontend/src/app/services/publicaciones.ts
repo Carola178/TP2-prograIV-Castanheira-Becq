@@ -4,7 +4,8 @@ import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 
 @Injectable({
-    providedIn: 'root'
+    providedIn: 'root',
+
 })
 export class PublicacionesService {
     private apiUrl = `${environment.apiUrl}/publicaciones`; 
@@ -33,7 +34,6 @@ export class PublicacionesService {
         });
     }
 
-    // Nuevo método añadido para soportar la creación de publicaciones con FormData (imagen a Cloudinary)
     crearPublicacion(formData: FormData): Observable<any> {
         return this.http.post<any>(this.apiUrl, formData, {
             withCredentials: true
@@ -61,4 +61,14 @@ export class PublicacionesService {
             { withCredentials: true }
         );
     }
+    
+    obtenerPublicacionPorId(id: string): Observable<any> {
+        return this.http.get<any>(
+            `${this.apiUrl}/${id}`,
+            {
+                withCredentials: true
+            }
+        );
+    }
+
 }

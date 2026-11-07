@@ -1,42 +1,48 @@
+
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Auth } from '../../services/auth';
 import { Router } from '@angular/router';
 import { PublicacionesService } from '../../services/publicaciones';
+import { Comentarios } from '../comentarios/comentarios';
 
 export interface Publicacion {
   id: string;
   titulo: string;
   descripcion: string;
   urlImagen?: string;
-  autor: string; 
+  autor: string;
   nombreAutor?: string;
   avatarAutor?: string;
   cantidadMeGusta: number;
   leGustaAlUsuarioActual: boolean;
   cantidadComentarios?: number;
-  createdAt: string; 
+  createdAt: string;
 }
 
 @Component({
   selector: 'app-publicaciones',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, Comentarios],
   templateUrl: './publicaciones.html',
   styleUrls: ['./publicaciones.css']
 })
 export class Publicaciones implements OnInit {
+
   publicaciones: Publicacion[] = [];
+
   paginaActual: number = 1;
   totalPaginas: number = 1;
   criterioOrden: 'fechaCreacion' | 'cantidadMeGusta' = 'fechaCreacion';
+
   idUsuarioActual: string = '';
   publicando: boolean = false;
 
-
   limite: number = 10;
   offset: number = 0;
+
+  publicacionComentariosAbierta: string | null = null;
 
   mostrarModalError: boolean = false;
   mensajeErrorModal: string = '';
@@ -48,8 +54,14 @@ export class Publicaciones implements OnInit {
   archivoSeleccionado: File | null = null;
 
   publicacionForm = new FormGroup({
-    titulo: new FormControl('', { nonNullable: true, validators: [Validators.required, Validators.minLength(3)] }),
-    descripcion: new FormControl('', { nonNullable: true, validators: [Validators.required, Validators.minLength(5)] })
+    titulo: new FormControl('', {
+      nonNullable: true,
+      validators: [Validators.required, Validators.minLength(3)]
+    }),
+    descripcion: new FormControl('', {
+      nonNullable: true,
+      validators: [Validators.required, Validators.minLength(5)]
+    })
   });
 
   constructor(
@@ -73,6 +85,7 @@ export class Publicaciones implements OnInit {
       offset: this.offset
     }).subscribe({
       next: (data: any) => {
+
         console.log('Respuesta de publicaciones:', data);
 
         const lista = Array.isArray(data)
@@ -89,15 +102,19 @@ export class Publicaciones implements OnInit {
           titulo: pub.titulo,
           descripcion: pub.descripcion,
           urlImagen: pub.urlImagen,
+
           autor: typeof pub.autor === 'object' && pub.autor !== null
             ? String(pub.autor._id || pub.autor.id)
             : String(pub.autor),
+
           nombreAutor: pub.autor && typeof pub.autor === 'object'
             ? `${pub.autor.nombre || ''} ${pub.autor.apellido || ''}`.trim()
             : 'Usuario',
+
           avatarAutor: pub.autor && typeof pub.autor === 'object'
             ? pub.autor.imagenPerfil
             : '',
+
           cantidadMeGusta: pub.cantidadMeGusta || 0,
           leGustaAlUsuarioActual: pub.leGustaAlUsuarioActual || false,
           cantidadComentarios: pub.cantidadComentarios || 0,
@@ -107,10 +124,9 @@ export class Publicaciones implements OnInit {
         this.aplicarOrdenamiento();
         this.cdr.detectChanges();
       },
+
       error: (err) => {
         console.error('Error al cargar publicaciones:', err);
-        console.error('Código HTTP:', err.status);
-        console.error('Detalle:', err.error);
 
         this.mensajeErrorModal =
           err.status === 401
@@ -126,7 +142,7 @@ export class Publicaciones implements OnInit {
       }
     });
   }
-  
+
   obtenerUsuarioLogueado(): void {
     const usuario = this.authService.usuarioActual;
 
@@ -139,30 +155,44 @@ export class Publicaciones implements OnInit {
       this.router.navigate(['/login']);
     }
   }
+
   cambiarOrden(evento: Event): void {
-    const seleccion = (evento.target as HTMLSelectElement).value as 'fechaCreacion' | 'cantidadMeGusta';
-    this.criterioOrden = seleccion;
-    this.paginaActual = 1;
-    this.cargarPublicaciones();
+      const seleccion = (evento.target as HTMLSelectElement).value;
+
+      if (
+          seleccion !== 'fechaCreacion' &&
+          seleccion !== 'cantidadMeGusta'
+      ) {
+          return;
+      }
+
+      this.criterioOrden = seleccion;
+      this.paginaActual = 1;
+      this.publicacionComentariosAbierta = null;
+      this.cargarPublicaciones();
   }
 
   aplicarOrdenamiento(): void {
     this.publicaciones = [...this.publicaciones].sort((a, b) => {
+
       if (this.criterioOrden === 'fechaCreacion') {
         const tiempoA = new Date(a.createdAt).getTime() || 0;
         const tiempoB = new Date(b.createdAt).getTime() || 0;
+
         return tiempoB - tiempoA;
-      } else {
-        const likesA = a.cantidadMeGusta || 0;
-        const likesB = b.cantidadMeGusta || 0;
-        return likesB - likesA;
       }
+
+      const likesA = a.cantidadMeGusta || 0;
+      const likesB = b.cantidadMeGusta || 0;
+
+      return likesB - likesA;
     });
   }
 
   cambiarPagina(nuevaPagina: number): void {
     if (nuevaPagina >= 1 && nuevaPagina <= this.totalPaginas) {
       this.paginaActual = nuevaPagina;
+      this.publicacionComentariosAbierta = null;
       this.cargarPublicaciones();
     }
   }
@@ -177,36 +207,43 @@ export class Publicaciones implements OnInit {
     this.mostrarModalCrear = false;
   }
 
-  
   onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
     const file = input.files?.[0];
+
     if (!file) {
       this.archivoSeleccionado = null;
       return;
     }
+
     const tiposPermitidos = [
       'image/jpeg',
       'image/png',
       'image/webp'
     ];
+
     const maximo = 5 * 1024 * 1024;
+
     if (!tiposPermitidos.includes(file.type)) {
       this.mensajeErrorModal =
         'Solo se permiten imágenes JPG, PNG o WEBP.';
+
       this.mostrarModalError = true;
       this.archivoSeleccionado = null;
       input.value = '';
       return;
     }
+
     if (file.size > maximo) {
       this.mensajeErrorModal =
         'La imagen no puede superar los 5 MB.';
+
       this.mostrarModalError = true;
       this.archivoSeleccionado = null;
       input.value = '';
       return;
     }
+
     this.archivoSeleccionado = file;
   }
 
@@ -215,39 +252,54 @@ export class Publicaciones implements OnInit {
       this.publicacionForm.markAllAsTouched();
       return;
     }
+
     if (this.publicando) return;
+
     this.publicando = true;
+
     const formData = new FormData();
+
     formData.append(
       'titulo',
       this.publicacionForm.controls.titulo.value.trim()
     );
+
     formData.append(
       'descripcion',
       this.publicacionForm.controls.descripcion.value.trim()
     );
+
     if (this.archivoSeleccionado) {
       formData.append('imagen', this.archivoSeleccionado);
     }
+
     this.publicacionesService.crearPublicacion(formData).subscribe({
       next: () => {
         this.publicando = false;
         this.cerrarModalCrear();
+
         this.publicacionForm.reset();
         this.archivoSeleccionado = null;
+
         this.paginaActual = 1;
+        this.publicacionComentariosAbierta = null;
         this.cargarPublicaciones();
+
         this.cdr.detectChanges();
       },
+
       error: (err) => {
         this.publicando = false;
+
         console.error('Error al crear publicación:', err);
+
         this.mensajeErrorModal =
           err.status === 401
             ? 'Tu sesión expiró. Volvé a iniciar sesión.'
             : err.status === 400
             ? 'Los datos de la publicación no son válidos.'
             : 'No se pudo crear la publicación. Intentá nuevamente.';
+
         this.mostrarModalError = true;
         this.cdr.detectChanges();
       }
@@ -262,25 +314,50 @@ export class Publicaciones implements OnInit {
     accion.subscribe({
       next: (respuesta: any) => {
         const publicacionActualizada = respuesta.publicacion;
-        publicacion.cantidadMeGusta = publicacionActualizada.cantidadMeGusta;
-        publicacion.leGustaAlUsuarioActual = !publicacion.leGustaAlUsuarioActual;
+
+        publicacion.cantidadMeGusta =
+          publicacionActualizada.cantidadMeGusta;
+
+        publicacion.leGustaAlUsuarioActual =
+          !publicacion.leGustaAlUsuarioActual;
 
         if (this.criterioOrden === 'cantidadMeGusta') {
           this.cargarPublicaciones();
         }
+
         this.cdr.detectChanges();
       },
+
       error: (err) => {
         console.error('Error al modificar el Me gusta:', err);
+
         if (err.status === 401) {
           return;
         }
 
-        this.mensajeErrorModal = 'No se pudo registrar el Me gusta. Inténtalo nuevamente.';
+        this.mensajeErrorModal =
+          'No se pudo registrar el Me gusta. Inténtalo nuevamente.';
+
         this.mostrarModalError = true;
         this.cdr.detectChanges();
       }
     });
+  }
+
+  alternarComentarios(idPublicacion: string): void {
+    if (this.publicacionComentariosAbierta === idPublicacion) {
+      this.publicacionComentariosAbierta = null;
+    } else {
+      this.publicacionComentariosAbierta = idPublicacion;
+    }
+  }
+
+  irAComentarios(idPublicacion: string): void {
+    this.router.navigate([
+      '/publicaciones',
+      idPublicacion,
+      'comentarios'
+    ]);
   }
 
   confirmarEliminacion(idPublicacion: string): void {
@@ -296,21 +373,31 @@ export class Publicaciones implements OnInit {
   ejecutarEliminacion(): void {
     if (!this.idPublicacionAEliminar) return;
 
-    this.publicacionesService.eliminarPublicacion(this.idPublicacionAEliminar).subscribe({
+    this.publicacionesService.eliminarPublicacion(
+      this.idPublicacionAEliminar
+    ).subscribe({
       next: () => {
-        this.publicaciones = this.publicaciones.filter(p => p.id !== this.idPublicacionAEliminar);
+        this.publicaciones = this.publicaciones.filter(
+          p => p.id !== this.idPublicacionAEliminar
+        );
+
+        this.publicacionComentariosAbierta = null;
         this.cancelarEliminacion();
         this.cdr.detectChanges();
       },
+
       error: (err) => {
         console.error('Error al eliminar la publicación:', err);
+
         this.cancelarEliminacion();
 
         if (err.status === 401) {
           return;
         }
+
         this.mensajeErrorModal =
           'No se pudo eliminar la publicación. Inténtalo de nuevo.';
+
         this.mostrarModalError = true;
         this.cdr.detectChanges();
       }
@@ -325,7 +412,7 @@ export class Publicaciones implements OnInit {
     this.router.navigate(['/perfil']);
   }
 
-  cerrarSesion() {
+  cerrarSesion(): void {
     this.authService.cerrarSesion();
   }
 }

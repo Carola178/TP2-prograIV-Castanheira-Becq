@@ -1,0 +1,185 @@
+
+<div class="pagina-comentarios"
+     [class.modo-integrado]="modoIntegrado">
+
+    <!-- Solo mostrar encabezado en página individual -->
+    @if (!modoIntegrado) {
+        <header class="encabezado-comentarios">
+            <h2>🐾 Patitas al refugio</h2>
+
+            <button (click)="volverAlFeed()">
+                ← Volver al feed
+            </button>
+        </header>
+    }
+
+    <main class="contenedor-comentarios">
+
+        <!-- Publicación completa: solo página individual -->
+        @if (!modoIntegrado) {
+
+            @if (cargandoPublicacion) {
+                <p>Cargando publicación...</p>
+            } @else if (publicacion) {
+
+                <article class="publicacion-detalle">
+
+                    <div class="autor-publicacion">
+                        <strong>
+                            {{ publicacion.autor?.nombre }}
+                            {{ publicacion.autor?.apellido }}
+                        </strong>
+
+                        <span>
+                            {{ publicacion.createdAt | date:'dd/MM/yyyy HH:mm' }}
+                        </span>
+                    </div>
+
+                    <h2>{{ publicacion.titulo }}</h2>
+
+                    <p>{{ publicacion.descripcion }}</p>
+
+                    @if (publicacion.urlImagen) {
+                        <img
+                            [src]="publicacion.urlImagen"
+                            alt="Imagen de la publicación"
+                            class="imagen-publicacion"
+                        />
+                    }
+
+                    <div class="me-gusta-publicacion">
+                        ❤️ {{ publicacion.cantidadMeGusta }} Me gusta
+                    </div>
+
+                </article>
+            }
+        }
+
+        <!-- COMENTARIOS -->
+        <section class="seccion-comentarios">
+
+            <h3>Comentarios</h3>
+
+            <!-- FORMULARIO -->
+            <div class="formulario-comentario">
+
+                <textarea
+                    [(ngModel)]="nuevoComentario"
+                    placeholder="Escribí un comentario..."
+                    rows="3">
+                </textarea>
+
+                <button
+                    (click)="publicarComentario()"
+                    [disabled]="!nuevoComentario.trim() || publicando">
+
+                    {{ publicando
+                        ? 'Publicando...'
+                        : '➕ Añadir comentario' }}
+
+                </button>
+
+            </div>
+
+            <!-- LISTADO -->
+            @for (comentario of comentarios; track comentario._id) {
+
+                <div class="tarjeta-comentario">
+
+                    <div class="cabecera-comentario">
+
+                        <div class="usuario-comentario">
+
+                            @if (typeofAutorImagen(comentario)) {
+                                <img
+                                    [src]="typeofAutorImagen(comentario)"
+                                    alt="Foto de perfil"
+                                    class="avatar-comentario"
+                                />
+                            } @else {
+                                <div class="avatar-placeholder">👤</div>
+                            }
+
+                            <strong>
+                                {{ obtenerNombreAutor(comentario) }}
+                            </strong>
+
+                        </div>
+
+                        <span>
+                            {{ comentario.createdAt | date:'dd/MM/yyyy HH:mm' }}
+                        </span>
+
+                    </div>
+
+                    @if (idComentarioEditando === comentario._id) {
+
+                        <textarea
+                            [(ngModel)]="mensajeEditado"
+                            rows="3">
+                        </textarea>
+
+                        <div class="acciones-edicion">
+
+                            <button
+                                (click)="guardarEdicion(comentario)"
+                                [disabled]="!mensajeEditado.trim() || guardandoEdicion">
+                                Guardar
+                            </button>
+
+                            <button
+                                (click)="cancelarEdicion()"
+                                [disabled]="guardandoEdicion">
+                                Cancelar
+                            </button>
+
+                        </div>
+
+                    } @else {
+
+                        <p>{{ comentario.mensaje }}</p>
+
+                        @if (comentario.modificado) {
+                            <small class="comentario-editado">
+                                (Editado)
+                            </small>
+                        }
+
+                        @if (esAutor(comentario)) {
+                            <button
+                                class="boton-editar"
+                                (click)="editarComentario(comentario)">
+                                ✏️ Editar
+                            </button>
+                        }
+
+                    }
+
+                </div>
+            }
+
+            @if (cargando) {
+                <p>Cargando comentarios...</p>
+            }
+
+            @if (!cargando && comentarios.length === 0 && !mensajeError) {
+                <p>Todavía no hay comentarios. ¡Sé el primero!</p>
+            }
+
+            @if (hayMas && !cargando) {
+                <button
+                    class="boton-cargar-mas"
+                    (click)="cargarComentarios()">
+                    Cargar más comentarios
+                </button>
+            }
+
+        </section>
+
+        @if (mensajeError) {
+            <p class="mensaje-error">{{ mensajeError }}</p>
+        }
+
+    </main>
+
+</div>

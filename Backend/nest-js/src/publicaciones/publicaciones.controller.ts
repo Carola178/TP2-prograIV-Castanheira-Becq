@@ -67,4 +67,17 @@ export class PublicacionesController {
             idUsuario
         );
     }
+    
+    @Get(':id')
+    obtenerPorId(
+        @Param('id') idPublicacion: string,
+        @Req() solicitud: any
+    ) {
+        const idUsuarioActual = solicitud.usuarioAutenticado?.id;
+
+        return this.publicacionesService.obtenerPorId(
+            idPublicacion,
+            idUsuarioActual
+        );
+    }
 }

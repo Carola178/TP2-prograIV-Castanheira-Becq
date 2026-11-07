@@ -3,6 +3,8 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import {Comentario, ComentarioDocument} from './entities/comentarios.dto.js';
 
+
+
 @Injectable()
 export class ComentariosService {
 
@@ -34,8 +36,8 @@ export class ComentariosService {
     }
 
     const comentario = new this.comentarioModel({
-      publicacion: idPublicacion,
-      autor: idUsuario,
+      publicacion: new Types.ObjectId(idPublicacion),
+      autor: new Types.ObjectId(idUsuario),
       mensaje
     });
 
@@ -94,25 +96,40 @@ export class ComentariosService {
     };
   }
 
-  async editar(idPublicacion: string, idComentario: string, idUsuario: string, mensaje: string) {
-      if (!Types.ObjectId.isValid(idPublicacion) || !Types.ObjectId.isValid(idComentario)
+  async editar(
+      idPublicacion: string,
+      idComentario: string,
+      idUsuario: string,
+      mensaje: string
+  ) {
+      if (
+          !Types.ObjectId.isValid(idPublicacion) ||
+          !Types.ObjectId.isValid(idComentario)
       ) {
           throw new BadRequestException('ID inválido');
       }
-      const comentario = await this.comentarioModel.findOne({_id: idComentario, publicacion: idPublicacion});
+
+      const comentario = await this.comentarioModel.findOne({
+          _id: new Types.ObjectId(idComentario),
+          publicacion: new Types.ObjectId(idPublicacion)
+      });
 
       if (!comentario) {
           throw new NotFoundException('Comentario no encontrado');
       }
-      if (comentario.autor.toString() !== idUsuario.toString()) {
+
+      if (!idUsuario || comentario.autor.toString() !== idUsuario.toString()) {
           throw new ForbiddenException(
               'No tenés permiso para editar este comentario'
           );
       }
+
       comentario.mensaje = mensaje;
       comentario.modificado = true;
 
       await comentario.save();
+
       return comentario;
   }
+
 }

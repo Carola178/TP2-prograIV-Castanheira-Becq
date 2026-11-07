@@ -1,6 +1,6 @@
-import { Injectable, ForbiddenException, NotFoundException } from '@nestjs/common';
+import { Injectable, ForbiddenException, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { Publicacion, PublicacionDocument } from './entities/publicaciones.dto.js';
 import { Usuario, UsuarioDocument } from '../usuarios/entities/usuario.entity.js'; 
 import { CrearPublicacionDto } from './dto/crear-publicacion.dto.js';
@@ -141,4 +141,30 @@ export class PublicacionesService {
         publicacion: updated
     };
 }
+
+  async obtenerPorId(idPublicacion: string, idUsuarioActual?: string) {
+      if (!Types.ObjectId.isValid(idPublicacion)) {
+          throw new BadRequestException('ID de publicación inválido');
+      }
+
+      const publicacion = await this.publicacionModel
+          .findOne({ _id: idPublicacion, activo: true })
+          .populate('autor', 'nombre apellido nombreUsuario imagenPerfil')
+          .exec();
+
+      if (!publicacion) {
+          throw new NotFoundException('Publicación no encontrada');
+      }
+
+      const leGusta = idUsuarioActual
+          ? publicacion.usuariosQueDieronMeGusta?.some(
+              id => id.toString() === idUsuarioActual
+            )
+          : false;
+
+      return {
+          ...publicacion.toObject(),
+          leGustaAlUsuarioActual: leGusta
+      };
+  }
 }

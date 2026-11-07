@@ -54,7 +54,7 @@ export class AutenticacionService {
             const nuevoUsuarioData = {
                 ...createAuthDto,
                 contrasena: hashedPassword,
-                perfil: createAuthDto.perfil || 'usuario', 
+                perfil: 'usuario', 
             };
 
             const nuevoUsuario = await this.usuarioModel.create(nuevoUsuarioData);

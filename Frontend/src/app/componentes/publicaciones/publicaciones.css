@@ -336,3 +336,66 @@
     min-height: 120px;
     resize: vertical;
 }
+
+/* =========================================
+   BOTÓN VER / OCULTAR COMENTARIOS
+========================================= */
+
+.boton-comentarios {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    padding: 9px 16px;
+    min-height: 38px;
+
+    background-color: #F0EDFF;
+    color: #6558A9;
+
+    border: 1px solid #DCD5F5;
+    border-radius: 10px;
+
+    font-family: inherit;
+    font-size: 0.88rem;
+    font-weight: 600;
+
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.boton-comentarios:hover {
+    background-color: #E4DEFF;
+    border-color: #8878E6;
+    transform: translateY(-1px);
+}
+
+.boton-comentarios:active {
+    transform: translateY(0);
+}
+
+.boton-comentarios:focus-visible {
+    outline: 3px solid #C5BEF2;
+    outline-offset: 2px;
+}
+
+/* Cuando los comentarios están abiertos */
+
+.boton-comentarios.activo {
+    background-color: #8878E6;
+    color: #FFFFFF;
+    border-color: #8878E6;
+}
+
+.boton-comentarios.activo:hover {
+    background-color: #7262D1;
+}
+
+
+@media (max-width: 480px) {
+    .boton-comentarios {
+        padding: 9px 12px;
+        font-size: 0.82rem;
+        min-height: 40px;
+    }
+}
