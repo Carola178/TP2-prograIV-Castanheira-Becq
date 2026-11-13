@@ -16,22 +16,34 @@ export class AutenticacionService {
         private readonly passwordHasher: PasswordHasher,
     ) {}
 
+
     async login(loginAuthDto: LoginDto) {
-            const user = await this.usuarioModel.findOne({
-                $or: [
-                    { email: loginAuthDto.email },
-                    { nombreUsuario: loginAuthDto.email }
-                ]
-            });
+        const user = await this.usuarioModel.findOne({
+            $or: [
+                { email: loginAuthDto.email },
+                { nombreUsuario: loginAuthDto.email }
+            ]
+        });
 
-            const isPasswordValid = user ? await this.passwordHasher.verify(loginAuthDto.contrasena, user.contrasena) : false;
-
-            if (!user || !isPasswordValid) {
-                throw new UnauthorizedException('Credenciales incorrectas. Intente nuevamente');
-            }
-
-            return this.generateToken(user);
+        const isPasswordValid = user
+            ? await this.passwordHasher.verify(
+                loginAuthDto.contrasena,
+                user.contrasena
+            )
+            : false;
+        if (!user || !isPasswordValid) {
+            throw new UnauthorizedException(
+                'Credenciales incorrectas. Intente nuevamente'
+            );
         }
+        if (user.activo === false) {
+            throw new UnauthorizedException(
+                'Tu cuenta se encuentra deshabilitada. No estás autorizado para ingresar.'
+            );
+        }
+        return this.generateToken(user);
+    }
+
 
     async registrar(createAuthDto: CrearUsuarioDto) {
             if (!createAuthDto.email || !createAuthDto.nombreUsuario) {
@@ -113,18 +125,32 @@ export class AutenticacionService {
 
     async autorizar(idUsuario: string) {
         const usuario = await this.usuarioModel.findById(idUsuario).select('-contrasena');
-        if (!usuario) {
-            throw new UnauthorizedException('Usuario no encontrado');
+        if (!usuario || usuario.activo === false) {
+            throw new UnauthorizedException(
+                'Usuario inexistente o cuenta deshabilitada'
+            );
         }
         return usuario;
     }
 
     async refrescar(idUsuario: string) {
         const usuario = await this.usuarioModel.findById(idUsuario);
-        if (!usuario) {
-            throw new UnauthorizedException('Usuario no encontrado');
-        }
-        return this.generateToken(usuario);
-    }
 
+        if (!usuario || usuario.activo === false) {
+            throw new UnauthorizedException(
+                'Usuario inexistente o cuenta deshabilitada'
+            );
+        }
+        const token = await this.jwtService.signAsync({
+            sub: usuario._id.toString(),
+            perfil: usuario.perfil
+        });
+        const { contrasena, ...usuarioSeguro } = usuario.toObject();
+        const expiraEn = Date.now() + 15 * 60 * 1000;
+        return {
+            token,
+            usuario: usuarioSeguro,
+            expiraEn
+        };
+    }
 }

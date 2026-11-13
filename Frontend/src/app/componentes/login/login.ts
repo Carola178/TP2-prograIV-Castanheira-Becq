@@ -66,7 +66,26 @@ export class Login implements OnInit {
     error: (error) => {
       console.error('Error en el login', error);
       this.loginExitoso = false;
-      this.modalMensaje.set('Las credenciales son incorrectas. Inténtelo nuevamente.');
+
+      if (error.status === 401) {
+        const mensajeBackend = error.error?.message;
+
+        if (typeof mensajeBackend === 'string' &&
+            mensajeBackend.includes('deshabilitada')) {
+          this.modalMensaje.set(
+            'Tu cuenta se encuentra deshabilitada. No estás autorizado para ingresar.'
+          );
+        } else {
+          this.modalMensaje.set(
+            'Las credenciales son incorrectas. Inténtelo nuevamente.'
+          );
+        }
+      } else {
+        this.modalMensaje.set(
+          'Ocurrió un error al iniciar sesión. Intentá nuevamente más tarde.'
+        );
+      }
+
       this.isModalOpen.set(true);
       this.cdr.detectChanges();
     }

@@ -5,6 +5,7 @@ import { AutenticacionModule } from './autenticacion/autenticacion.module.js';
 import { PublicacionesModule } from './publicaciones/publicaciones.module.js';
 import { UsuariosModule } from './usuarios/usuarios.module.js';
 import { ComentariosModule } from './comentarios/comentarios.module.js';
+import { AdminPanelModule } from './admin-panel/admin-panel.module.js';
 
 @Module({
   imports: [
@@ -21,7 +22,8 @@ import { ComentariosModule } from './comentarios/comentarios.module.js';
     AutenticacionModule,
     PublicacionesModule,
     UsuariosModule,
-    ComentariosModule
+    ComentariosModule,
+    AdminPanelModule
   ],
   controllers: [],
   providers: [],

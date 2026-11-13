@@ -37,6 +37,7 @@ export class Publicaciones implements OnInit {
   criterioOrden: 'fechaCreacion' | 'cantidadMeGusta' = 'fechaCreacion';
 
   idUsuarioActual: string = '';
+  esAdministrador: boolean = false;
   publicando: boolean = false;
 
   limite: number = 10;
@@ -145,11 +146,10 @@ export class Publicaciones implements OnInit {
 
   obtenerUsuarioLogueado(): void {
     const usuario = this.authService.usuarioActual;
-
     this.idUsuarioActual = String(
       usuario?._id || usuario?.id || usuario?.sub || ''
     );
-
+    this.esAdministrador = usuario?.perfil === 'administrador';
     if (!this.idUsuarioActual) {
       console.error('No se encontró un usuario autenticado');
       this.router.navigate(['/login']);

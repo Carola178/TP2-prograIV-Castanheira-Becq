@@ -34,6 +34,9 @@ export class Usuario {
 
     @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Publicacion' }], default: [] })
     publicaciones: mongoose.Types.ObjectId[];
+
+    @Prop({ default: true })
+    activo: boolean;
 }
 
 export const UsuarioSchema = SchemaFactory.createForClass(Usuario);

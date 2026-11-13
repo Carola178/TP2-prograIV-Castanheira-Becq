@@ -40,8 +40,13 @@ export class PublicacionesController {
     }
 
     @Delete(':id')
-    async eliminarPublicacion(@Param('id') idPublicacion: string, @Req() solicitud: any) {
-        const idUsuarioActual = solicitud.usuarioAutenticado?.id;
+    async eliminarPublicacion(
+        @Param('id') idPublicacion: string,
+        @Req() solicitud: any
+    ) {
+        const idUsuarioActual =
+            solicitud.usuarioAutenticado?.id ??
+            solicitud.usuarioAutenticado?.sub;
 
         return this.publicacionesService.eliminar(
             idPublicacion,

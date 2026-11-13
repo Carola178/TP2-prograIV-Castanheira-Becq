@@ -96,6 +96,7 @@ export class ComentariosService {
     };
   }
 
+
   async editar(
       idPublicacion: string,
       idComentario: string,
@@ -108,28 +109,34 @@ export class ComentariosService {
       ) {
           throw new BadRequestException('ID inválido');
       }
+      const publicacion = await this.publicacionModel.exists({
+          _id: idPublicacion,
+          activo: true
+      });
 
+      if (!publicacion) {
+          throw new NotFoundException(
+              'La publicación no existe o está deshabilitada'
+          );
+      }
       const comentario = await this.comentarioModel.findOne({
           _id: new Types.ObjectId(idComentario),
           publicacion: new Types.ObjectId(idPublicacion)
       });
-
       if (!comentario) {
           throw new NotFoundException('Comentario no encontrado');
       }
-
-      if (!idUsuario || comentario.autor.toString() !== idUsuario.toString()) {
+      if (
+          !idUsuario ||
+          comentario.autor.toString() !== idUsuario.toString()
+      ) {
           throw new ForbiddenException(
               'No tenés permiso para editar este comentario'
           );
       }
-
       comentario.mensaje = mensaje;
       comentario.modificado = true;
-
       await comentario.save();
-
       return comentario;
   }
-
 }

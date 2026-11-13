@@ -9,9 +9,7 @@ import { PasswordHasher } from '@nestjs/authentication';
 import { FileService } from '../documentos/file.service.js';
 
 @Module({
-  imports: [
-    ConfigModule.forRoot(),
-    JwtModule.register({
+  imports: [ConfigModule.forRoot(), JwtModule.register({
       global: true,
       secret: process.env.JWT_secret || 'secreto_super_seguro',
       signOptions: { expiresIn: '15m' },
@@ -20,6 +18,6 @@ import { FileService } from '../documentos/file.service.js';
   ],
   controllers: [AutenticacionController],
   providers: [AutenticacionService, PasswordHasher, FileService],
-  exports: [AutenticacionService],
+  exports: [AutenticacionService, PasswordHasher],
 })
 export class AutenticacionModule {} 

@@ -75,13 +75,15 @@
 
                             </button>
 
-                            @if (pub.autor === idUsuarioActual) {
+                            @if (pub.autor === idUsuarioActual || esAdministrador) {
                                 <button
+                                    type="button"
                                     class="boton-eliminar"
                                     (click)="confirmarEliminacion(pub.id)">
                                     🗑️ Eliminar
                                 </button>
                             }
+
 
                         </footer>
 
@@ -149,15 +151,31 @@
     </div>
 }
 
-<!-- MODAL DE CONFIRMACIÓN DE ELIMINACIÓN -->
+<!-- MODAL DE CONFIRMACIÓN DE BAJA -->
 @if (mostrarModalConfirmacion) {
     <div class="modal-backdrop">
         <div class="modal-content">
-            <h3>Eliminar Publicación</h3>
-            <p>¿Estás seguro de que deseas eliminar esta publicación? Esta acción no se puede deshacer.</p>
+            <h3>Deshabilitar publicación</h3>
+
+            <p>
+                ¿Estás seguro de que querés deshabilitar esta publicación?
+                La publicación y sus comentarios dejarán de estar disponibles.
+            </p>
+
             <div style="display: flex; justify-content: center; gap: 12px;">
-                <button class="btn-cancelar" (click)="cancelarEliminacion()">Cancelar</button>
-                <button class="btn-confirmar-eliminar" (click)="ejecutarEliminacion()">Eliminar</button>
+                <button
+                    type="button"
+                    class="btn-cancelar"
+                    (click)="cancelarEliminacion()">
+                    Cancelar
+                </button>
+
+                <button
+                    type="button"
+                    class="btn-confirmar-eliminar"
+                    (click)="ejecutarEliminacion()">
+                    Deshabilitar
+                </button>
             </div>
         </div>
     </div>

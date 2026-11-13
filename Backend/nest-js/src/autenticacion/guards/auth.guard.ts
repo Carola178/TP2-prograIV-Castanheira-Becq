@@ -1,34 +1,60 @@
 import {CanActivate, ExecutionContext, Injectable, UnauthorizedException} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import {Usuario, UsuarioDocument} from '../../usuarios/entities/usuario.entity.js';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
 
-    constructor(private readonly jwtService: JwtService) {}
+    constructor(
+        private readonly jwtService: JwtService,
 
-    canActivate(contexto: ExecutionContext): boolean {
-        // Obtener la solicitud HTTP
+        @InjectModel(Usuario.name)
+        private readonly usuarioModel: Model<UsuarioDocument>
+    ) {}
+
+    async canActivate(contexto: ExecutionContext): Promise<boolean> {
+
         const solicitud = contexto.switchToHttp().getRequest();
-        // Buscar el token primero en la cookie y luego en el header
         const token = this.extraerTokenDeCookie(contexto);
 
         if (!token) {
             throw new UnauthorizedException('No se encontró un token');
         }
+
+        let datosUsuario: any;
+
         try {
-            // Verificar que el JWT sea válido y no esté vencido
-            const datosUsuario = this.jwtService.verify(token);
-            // Guardar los datos del usuario autenticado en la solicitud
-            solicitud.usuarioAutenticado = datosUsuario;
-            return true;
-        } catch (error) {
+            datosUsuario = await this.jwtService.verifyAsync(token);
+        } catch {
             throw new UnauthorizedException('Token inválido o vencido');
         }
+
+        const usuario = await this.usuarioModel.findById(datosUsuario.sub);
+
+        if (!usuario) {
+            throw new UnauthorizedException('Usuario no encontrado');
+        }
+
+        if (usuario.activo === false) {
+            throw new UnauthorizedException(
+                'Tu cuenta fue deshabilitada. Contactá al administrador.'
+            );
+        }
+
+        solicitud.usuarioAutenticado = {
+            ...datosUsuario,
+            id: usuario._id.toString(),
+            perfil: usuario.perfil
+        };
+        return true;
     }
-    // Obtener el JWT desde la cookie
-    private extraerTokenDeCookie(contexto: ExecutionContext): string | null {
+
+    private extraerTokenDeCookie(
+        contexto: ExecutionContext
+    ): string | null {
         const solicitud = contexto.switchToHttp().getRequest();
-        const token = solicitud.cookies?.['Token'];
-        return token || null;
+        return solicitud.cookies?.['Token'] || null;
     }
 }

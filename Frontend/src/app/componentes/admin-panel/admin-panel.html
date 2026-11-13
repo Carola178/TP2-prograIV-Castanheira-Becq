@@ -1,0 +1,447 @@
+<nav class="barra-navegacion">
+
+    <div class="marca-contenedor">
+        <img
+        src="logo.png"
+        alt="Logo Patitas al Refugio"
+        class="logo-app"
+        />
+
+        <span class="titulo-app">Patitas al Refugio</span>
+    </div>
+
+    <div class="menu-navegacion">
+
+        <a routerLink="/publicaciones" class="boton-perfil">
+        Publicaciones
+        </a>
+
+        <button
+        type="button"
+        class="boton-perfil btn-logout"
+        (click)="cerrarSesion()">
+        Cerrar sesión
+        </button>
+
+    </div>
+
+</nav>
+
+
+<div class="admin-container">
+
+    <h1>Panel de Administración</h1>
+    <p>Gestión de usuarios de Patitas al Refugio</p>
+
+    <section class="usuarios-section">
+
+        <div class="usuarios-encabezado">
+        <h2>Usuarios registrados</h2>
+
+        <button
+            type="button"
+            class="btn-crear-usuario"
+            (click)="abrirModalCrearUsuario()">
+            + Crear usuario
+        </button>
+        </div>
+
+        @if (mensaje()) {
+        <p class="mensaje-exito">{{ mensaje() }}</p>
+        }
+
+        @if (error()) {
+        <p class="mensaje-error">{{ error() }}</p>
+        }
+
+        @if (cargando()) {
+        <p>Cargando usuarios...</p>
+        }
+
+        @if (!cargando()) {
+
+        <table class="tabla-usuarios">
+            <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Usuario</th>
+                <th>Email</th>
+                <th>Perfil</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            @for (usuario of usuarios(); track usuario._id) {
+                <tr>
+                <td>{{ usuario.nombre }} {{ usuario.apellido }}</td>
+                <td>{{ usuario.nombreUsuario }}</td>
+                <td>{{ usuario.email }}</td>
+                <td>{{ usuario.perfil }}</td>
+
+                <td>
+                    @if (usuario.activo !== false) {
+                    <span class="estado-activo">Activo</span>
+                    } @else {
+                    <span class="estado-inactivo">Inactivo</span>
+                    }
+                </td>
+
+                <td>
+                    @if (usuario.activo !== false) {
+                    <button
+                        type="button"
+                        class="btn-deshabilitar"
+                        [disabled]="usuarioProcesando() !== null || esUsuarioActual(usuario._id)"
+                        (click)="abrirModalDeshabilitar(usuario)">
+                        {{ usuarioProcesando() === usuario._id ? 'Procesando...' : 'Deshabilitar' }}
+                    </button>
+                    } @else {
+                    <button
+                        type="button"
+                        class="btn-habilitar"
+                        [disabled]="usuarioProcesando() !== null"
+                        (click)="habilitarUsuario(usuario)">
+                        {{ usuarioProcesando() === usuario._id ? 'Procesando...' : 'Habilitar' }}
+                    </button>
+                    }
+                </td>
+                </tr>
+            } @empty {
+                <tr>
+                <td colspan="6">No hay usuarios registrados.</td>
+                </tr>
+            }
+            </tbody>
+        </table>
+        }
+
+    </section>
+    </div>
+
+
+    @if (modalConfirmacion()) {
+    <div class="modal-overlay">
+        <div
+        class="modal-contenido"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="titulo-modal-admin">
+
+        <h2 id="titulo-modal-admin">Confirmar deshabilitación</h2>
+
+        <p>
+            ¿Estás seguro de que querés deshabilitar a
+            <strong>
+            {{ usuarioSeleccionado()?.nombre }}
+            {{ usuarioSeleccionado()?.apellido }}
+            </strong>?
+        </p>
+
+        <p class="modal-advertencia">
+            Este usuario no podrá iniciar sesión hasta que
+            un administrador vuelva a habilitarlo.
+        </p>
+
+        <div class="modal-acciones">
+
+            <button
+            type="button"
+            class="btn-cancelar"
+            [disabled]="usuarioProcesando() !== null"
+            (click)="cerrarModalDeshabilitar()">
+            Cancelar
+            </button>
+
+            <button
+            type="button"
+            class="btn-confirmar"
+            [disabled]="usuarioProcesando() !== null"
+            (click)="confirmarDeshabilitacion()">
+            {{ usuarioProcesando() ? 'Procesando...' : 'Deshabilitar' }}
+            </button>
+
+        </div>
+        </div>
+    </div>
+    }
+
+    @if (modalCrearUsuario()) {
+    <div class="modal-overlay">
+
+        <div
+        class="modal-contenido modal-registro-admin"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="titulo-crear-usuario">
+
+        <div class="modal-registro-header">
+            <h2 id="titulo-crear-usuario">Crear nuevo usuario</h2>
+
+            <button
+            type="button"
+            class="btn-cerrar-modal"
+            [disabled]="creandoUsuario()"
+            (click)="cerrarModalCrearUsuario()">
+            ✕
+            </button>
+        </div>
+
+        <p>Completá los datos para registrar una nueva cuenta.</p>
+
+        @if (errorCreacion()) {
+            <p class="mensaje-error">{{ errorCreacion() }}</p>
+        }
+
+        <form
+            [formGroup]="registroAdminModel"
+            (ngSubmit)="crearUsuario()">
+
+            <div class="formulario-admin-grid">
+
+            <!-- NOMBRE -->
+
+            <div class="form-group">
+                <label for="admin-nombre">Nombre *</label>
+
+                <input
+                id="admin-nombre"
+                type="text"
+                formControlName="nombre"
+                placeholder="Nombre">
+
+                @if (registroAdminModel.get('nombre')?.invalid &&
+                    registroAdminModel.get('nombre')?.touched) {
+                <small class="error-msg">
+                    Ingresá un nombre válido de al menos 3 letras.
+                </small>
+                }
+            </div>
+
+            <!-- APELLIDO -->
+
+            <div class="form-group">
+                <label for="admin-apellido">Apellido *</label>
+
+                <input
+                id="admin-apellido"
+                type="text"
+                formControlName="apellido"
+                placeholder="Apellido">
+
+                @if (registroAdminModel.get('apellido')?.invalid &&
+                    registroAdminModel.get('apellido')?.touched) {
+                <small class="error-msg">
+                    Ingresá un apellido válido de al menos 3 letras.
+                </small>
+                }
+            </div>
+
+            <!-- EMAIL -->
+
+            <div class="form-group">
+                <label for="admin-email">Correo electrónico *</label>
+
+                <input
+                id="admin-email"
+                type="email"
+                formControlName="email"
+                placeholder="usuario@correo.com">
+
+                @if (registroAdminModel.get('email')?.invalid &&
+                    registroAdminModel.get('email')?.touched) {
+                <small class="error-msg">
+                    Ingresá un correo electrónico válido.
+                </small>
+                }
+            </div>
+
+            <!-- NOMBRE DE USUARIO -->
+
+            <div class="form-group">
+                <label for="admin-usuario">Nombre de usuario *</label>
+
+                <input
+                id="admin-usuario"
+                type="text"
+                formControlName="nombreUsuario"
+                placeholder="usuario123">
+
+                @if (registroAdminModel.get('nombreUsuario')?.invalid &&
+                    registroAdminModel.get('nombreUsuario')?.touched) {
+                <small class="error-msg">
+                    Debe tener entre 3 y 20 caracteres.
+                </small>
+                }
+            </div>
+
+            <!-- FECHA DE NACIMIENTO -->
+
+            <div class="form-group">
+                <label for="admin-fecha">Fecha de nacimiento *</label>
+
+                <input
+                id="admin-fecha"
+                type="text"
+                formControlName="fechaNacimiento"
+                placeholder="DD/MM/AAAA"
+                maxlength="10"
+                inputmode="numeric"
+                (input)="onDateInput($event)">
+
+                @if (registroAdminModel.get('fechaNacimiento')?.invalid &&
+                    registroAdminModel.get('fechaNacimiento')?.touched) {
+                <small class="error-msg">
+                    Ingresá una fecha válida en formato DD/MM/AAAA.
+                </small>
+                }
+            </div>
+
+            <!-- DESCRIPCION -->
+
+            <div class="form-group">
+                <label for="admin-descripcion">Descripción breve</label>
+
+                <textarea
+                id="admin-descripcion"
+                formControlName="descripcionBreve"
+                rows="2"
+                placeholder="Descripción opcional">
+                </textarea>
+
+                @if (registroAdminModel.get('descripcionBreve')?.invalid &&
+                    registroAdminModel.get('descripcionBreve')?.touched) {
+                <small class="error-msg">
+                    La descripción no puede superar los 200 caracteres.
+                </small>
+                }
+            </div>
+
+            <!-- IMAGEN DE PERFIL -->
+
+            <div class="form-group">
+                <label for="admin-imagen">Imagen de perfil</label>
+
+                <input
+                id="admin-imagen"
+                type="file"
+                accept="image/*"
+                (change)="seleccionarImagen($event)">
+
+                <small class="texto-ayuda">
+                Opcional. Seleccioná una imagen para el perfil del usuario.
+                </small>
+            </div>
+
+            <!-- PERFIL -->
+
+            <fieldset class="form-group grupo-perfil">
+                <legend>Perfil del usuario *</legend>
+
+                <label class="opcion-radio">
+                <input
+                    type="radio"
+                    formControlName="perfil"
+                    value="usuario">
+                Usuario
+                </label>
+
+                <label class="opcion-radio">
+                <input
+                    type="radio"
+                    formControlName="perfil"
+                    value="administrador">
+                Administrador
+                </label>
+            </fieldset>
+
+            <!-- CONTRASEÑA -->
+
+            <div class="form-group">
+                <label for="admin-contrasena">Contraseña *</label>
+
+                <div class="password-container">
+                <input
+                    id="admin-contrasena"
+                    [type]="verContrasena ? 'text' : 'password'"
+                    formControlName="contrasena"
+                    placeholder="Contraseña">
+
+                <button
+                    type="button"
+                    class="btn-toggle-password"
+                    (click)="verContrasena = !verContrasena">
+                    {{ verContrasena ? 'Ocultar' : 'Ver' }}
+                </button>
+                </div>
+
+                <small class="texto-ayuda">
+                Mínimo 8 caracteres, una mayúscula y un número.
+                </small>
+
+                @if (registroAdminModel.get('contrasena')?.invalid &&
+                    registroAdminModel.get('contrasena')?.touched) {
+                <small class="error-msg">
+                    La contraseña no cumple los requisitos.
+                </small>
+                }
+            </div>
+
+            <!-- REPETIR CONTRASEÑA -->
+
+            <div class="form-group">
+                <label for="admin-repetir-contrasena">
+                Repetir contraseña *
+                </label>
+
+                <div class="password-container">
+                <input
+                    id="admin-repetir-contrasena"
+                    [type]="verRepetirContrasena ? 'text' : 'password'"
+                    formControlName="repetirContrasena"
+                    placeholder="Repetir contraseña">
+
+                <button
+                    type="button"
+                    class="btn-toggle-password"
+                    (click)="verRepetirContrasena = !verRepetirContrasena">
+                    {{ verRepetirContrasena ? 'Ocultar' : 'Ver' }}
+                </button>
+                </div>
+
+                @if (registroAdminModel.get('repetirContrasena')?.touched &&
+                    registroAdminModel.errors?.['mismatch']) {
+                <small class="error-msg">
+                    Las contraseñas no coinciden.
+                </small>
+                }
+            </div>
+
+            </div>
+
+            <!-- BOTONES -->
+
+            <div class="modal-acciones">
+
+            <button
+                type="button"
+                class="btn-cancelar"
+                [disabled]="creandoUsuario()"
+                (click)="cerrarModalCrearUsuario()">
+                Cancelar
+            </button>
+
+            <button
+                type="submit"
+                class="btn-confirmar"
+                [disabled]="creandoUsuario()">
+                {{ creandoUsuario() ? 'Creando usuario...' : 'Crear usuario' }}
+            </button>
+
+            </div>
+
+        </form>
+        </div>
+    </div>
+}

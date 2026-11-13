@@ -4,6 +4,7 @@ import { ComentariosController } from './comentarios.controller.js';
 import { ComentariosService } from './comentarios.service.js';
 import {Comentario, ComentarioSchema} from './entities/comentarios.dto.js';
 import {Publicacion, PublicacionSchema} from '../publicaciones/entities/publicaciones.dto.js';
+import { Usuario, UsuarioSchema } from '../usuarios/entities/usuario.entity.js';
 
 @Module({
   imports: [
@@ -15,7 +16,9 @@ import {Publicacion, PublicacionSchema} from '../publicaciones/entities/publicac
       {
         name: Publicacion.name,
         schema: PublicacionSchema
-      }
+      },
+      { name: Usuario.name, 
+      schema: UsuarioSchema }
     ])
   ],
   controllers: [ComentariosController],
