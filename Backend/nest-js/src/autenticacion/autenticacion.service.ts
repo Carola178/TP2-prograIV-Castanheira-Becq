@@ -7,6 +7,8 @@ import { Usuario, UsuarioDocument } from '../usuarios/entities/usuario.entity.js
 import { JwtService } from '@nestjs/jwt';
 import { PasswordHasher } from '@nestjs/authentication';
 import { Response } from 'express';
+import { ConflictException, NotFoundException } from '@nestjs/common';
+import { ActualizarPerfilDto } from './dto/actualizar-usuario.dto.js';
 
 @Injectable()
 export class AutenticacionService {
@@ -153,4 +155,52 @@ export class AutenticacionService {
             expiraEn
         };
     }
+
+    async actualizarPerfil(
+        idUsuario: string,
+        datos: ActualizarPerfilDto,
+        imagenPerfil?: string
+    ) {
+        const usuario = await this.usuarioModel.findById(idUsuario);
+
+        if (!usuario || usuario.activo === false) {
+            throw new NotFoundException('Usuario no encontrado o deshabilitado');
+        }
+
+        if (datos.email || datos.nombreUsuario) {
+            const condiciones: any[] = [];
+
+            if (datos.email) {
+                condiciones.push({ email: datos.email });
+            }
+
+            if (datos.nombreUsuario) {
+                condiciones.push({ nombreUsuario: datos.nombreUsuario });
+            }
+
+            const usuarioExistente = await this.usuarioModel.findOne({
+                _id: { $ne: idUsuario },
+                $or: condiciones
+            });
+
+            if (usuarioExistente) {
+                throw new ConflictException(
+                    'El correo o nombre de usuario ya está registrado.'
+                );
+            }
+        }
+
+        Object.assign(usuario, datos);
+
+        if (imagenPerfil) {
+            usuario.imagenPerfil = imagenPerfil;
+        }
+
+        await usuario.save();
+
+        const { contrasena, ...usuarioSeguro } = usuario.toObject();
+
+        return usuarioSeguro;
+    }
+
 }

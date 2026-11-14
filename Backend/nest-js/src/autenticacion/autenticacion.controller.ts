@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Res, Get, Req, Param, UseGuards, UseInterceptors, UploadedFile } from '@nestjs/common';
+import { Controller, Post, Body, Res, Get, Req, Param, Patch, UseGuards, UseInterceptors, UploadedFile, BadRequestException } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { memoryStorage } from 'multer';
 import { AutenticacionService } from './autenticacion.service.js';
@@ -7,6 +7,7 @@ import { CrearUsuarioDto } from './dto/create-usuario.dto.js';
 import { LoginDto } from './dto/login.dto.js';
 import type { Response } from 'express';
 import { AuthGuard } from './guards/auth.guard.js';
+import { ActualizarPerfilDto } from './dto/actualizar-usuario.dto.js';
 
 @Controller('autenticacion')
 export class AutenticacionController {
@@ -114,4 +115,47 @@ export class AutenticacionController {
         };
     }
 
+
+    @Patch('perfil')
+    @UseGuards(AuthGuard)
+    @UseInterceptors(
+        FileInterceptor('imagenPerfil', {
+            storage: memoryStorage(),
+            limits: { fileSize: 5 * 1024 * 1024 },
+            fileFilter: (req, file, callback) => {
+                if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.mimetype)) {
+                    return callback(
+                        new BadRequestException('Solo se permiten imágenes JPG, PNG o WebP'),
+                        false
+                    );
+                }
+                callback(null, true);
+            }
+        })
+    )
+    async actualizarPerfil(
+        @Req() solicitud: any,
+        @Body() datos: ActualizarPerfilDto,
+        @UploadedFile() file?: Express.Multer.File
+    ) {
+        const idUsuario =
+            solicitud.usuarioAutenticado.sub ||
+            solicitud.usuarioAutenticado.id ||
+            solicitud.usuarioAutenticado._id;
+
+        let imagenPerfil: string | undefined;
+
+        if (file) {
+            imagenPerfil = await this.fileService.cloudinaryUploader(
+                file,
+                'perfiles'
+            );
+        }
+
+        return this.autenticacionService.actualizarPerfil(
+            idUsuario,
+            datos,
+            imagenPerfil
+        );
+    }
 }

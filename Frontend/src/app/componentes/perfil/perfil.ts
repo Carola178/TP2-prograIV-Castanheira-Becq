@@ -1,8 +1,9 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { PublicacionesService } from '../../services/publicaciones';
 import { Auth } from '../../services/auth';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 
 export interface Publicacion {
   id: string;
@@ -23,7 +24,7 @@ export interface Publicacion {
   standalone: true,
   templateUrl: './perfil.html',
   styleUrls: ['./perfil.css'],
-  imports: [CommonModule]
+  imports: [CommonModule, RouterLink, ReactiveFormsModule]
 })
 export class Perfil implements OnInit {
   usuario: any = null;
@@ -36,6 +37,26 @@ export class Perfil implements OnInit {
 
   limite: number = 3;
   offset: number = 0;
+
+  mostrarModalEditar = false;
+  guardandoPerfil = false;
+  errorEditarPerfil = '';
+
+  private fb = new FormBuilder();
+
+  formularioEditar = this.fb.nonNullable.group({
+    nombre: ['', [Validators.required, Validators.minLength(2)]],
+    apellido: ['', [Validators.required, Validators.minLength(2)]],
+    email: ['', [Validators.required, Validators.email]],
+    nombreUsuario: ['', [Validators.required, Validators.minLength(3)]],
+    descripcionBreve: ['', [Validators.maxLength(300)]]
+  });
+
+  mostrarModalFoto = false;
+  fotoSeleccionada: File | null = null;
+  vistaPreviaFoto: string | null = null;
+  guardandoFoto = false;
+  errorFoto = '';
 
   constructor(
     private router: Router,
@@ -78,6 +99,71 @@ export class Perfil implements OnInit {
       }
     });
   }
+
+
+abrirModalEditar(): void {
+  if (!this.usuario) return;
+
+  this.formularioEditar.patchValue({
+    nombre: this.usuario.nombre || '',
+    apellido: this.usuario.apellido || '',
+    email: this.usuario.email || '',
+    nombreUsuario: this.usuario.nombreUsuario || '',
+    descripcionBreve: this.usuario.descripcionBreve || ''
+  });
+
+  this.errorEditarPerfil = '';
+  this.mostrarModalEditar = true;
+}
+
+cerrarModalEditar(): void {
+  if (this.guardandoPerfil) return;
+
+  this.mostrarModalEditar = false;
+}
+
+  guardarPerfil(): void {
+    if (this.formularioEditar.invalid) {
+      this.formularioEditar.markAllAsTouched();
+      return;
+    }
+
+    this.guardandoPerfil = true;
+    this.errorEditarPerfil = '';
+
+    const datos = new FormData();
+    const valores = this.formularioEditar.getRawValue();
+
+    Object.entries(valores).forEach(([campo, valor]) => {
+      datos.append(campo, valor.trim());
+    });
+
+this.authService.actualizarPerfil(datos).subscribe({
+  next: (usuarioActualizado) => {
+    console.log('Perfil actualizado correctamente:', usuarioActualizado);
+
+    this.usuario = usuarioActualizado;
+    this.guardandoPerfil = false;
+    this.mostrarModalEditar = false;
+    this.cdr.detectChanges();
+  },
+  error: (err) => {
+    console.error('Error al actualizar perfil:', err);
+
+    const mensaje = err.error?.message;
+
+    this.errorEditarPerfil = Array.isArray(mensaje)
+      ? mensaje.join(', ')
+      : typeof mensaje === 'string'
+        ? mensaje
+        : 'No se pudo actualizar el perfil. Intentá nuevamente.';
+
+    this.guardandoPerfil = false;
+    this.cdr.detectChanges();
+  }
+});
+  }
+
 
   cargarPublicacionesUsuario(): void {
     this.cargando = true;
@@ -149,6 +235,80 @@ export class Perfil implements OnInit {
     });
   }
 
+  abrirModalFoto(): void {
+  this.mostrarModalFoto = true;
+  this.fotoSeleccionada = null;
+  this.vistaPreviaFoto = null;
+  this.errorFoto = '';
+}
+
+  cerrarModalFoto(): void {
+    if (this.guardandoFoto) return;
+
+    this.mostrarModalFoto = false;
+    this.fotoSeleccionada = null;
+    this.vistaPreviaFoto = null;
+    this.errorFoto = '';
+  }
+
+  seleccionarFoto(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const archivo = input.files?.[0];
+
+    if (!archivo) return;
+
+    if (!['image/jpeg', 'image/png', 'image/webp'].includes(archivo.type)) {
+      this.errorFoto = 'Seleccioná una imagen JPG, PNG o WebP.';
+      input.value = '';
+      return;
+    }
+
+    if (archivo.size > 5 * 1024 * 1024) {
+      this.errorFoto = 'La imagen no puede superar los 5 MB.';
+      input.value = '';
+      return;
+    }
+
+    this.fotoSeleccionada = archivo;
+    this.errorFoto = '';
+
+    const lector = new FileReader();
+
+    lector.onload = () => {
+      this.vistaPreviaFoto = lector.result as string;
+      this.cdr.detectChanges();
+    };
+
+    lector.readAsDataURL(archivo);
+  }
+
+  guardarFoto(): void {
+    if (!this.fotoSeleccionada || this.guardandoFoto) return;
+
+    this.guardandoFoto = true;
+    this.errorFoto = '';
+
+    const datos = new FormData();
+    datos.append('imagenPerfil', this.fotoSeleccionada);
+
+    this.authService.actualizarPerfil(datos).subscribe({
+      next: (usuarioActualizado) => {
+        this.usuario = usuarioActualizado;
+        this.guardandoFoto = false;
+        this.mostrarModalFoto = false;
+        this.fotoSeleccionada = null;
+        this.vistaPreviaFoto = null;
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('Error al cambiar la foto:', err);
+        this.errorFoto = 'No se pudo actualizar la foto. Intentá nuevamente.';
+        this.guardandoFoto = false;
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
   cambiarPagina(nuevaPagina: number): void {
     if (
       nuevaPagina >= 1 &&
@@ -216,11 +376,4 @@ export class Perfil implements OnInit {
     }
   }
 
-  irAlFeed(): void {
-    this.router.navigate(['/publicaciones']);
-  }
-
-  cerrarSesion(): void {
-    this.authService.cerrarSesion();
-  }
 }

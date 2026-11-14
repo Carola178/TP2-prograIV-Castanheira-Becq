@@ -1,0 +1,129 @@
+
+/* ENCABEZADO */
+
+.estadisticas-header h1,
+.grafico-card h2,
+.mensaje-inicial {
+    color: var(--text-dark, #2D3142);
+}
+
+/* FILTROS */
+
+.filtros {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 20px;
+    padding: 20px;
+    margin-bottom: 30px;
+    background: var(--card-bg, #fff);
+    border-radius: 12px;
+}
+
+.filtro-fecha label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+
+.filtro-fecha input {
+    padding: 10px;
+    border: 1px solid var(--border-color, #E2DFFA);
+    border-radius: 8px;
+    font: inherit;
+}
+
+.filtro-fecha input:focus {
+    outline: 2px solid var(--primary-color, #8875D9);
+    outline-offset: 1px;
+}
+
+.btn-filtrar {
+    padding: 12px 20px;
+    background: var(--primary-color, #8875D9);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.btn-filtrar:hover:not(:disabled) {
+    background: var(--primary-hover, #7569E0);
+}
+
+.btn-filtrar:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* GRÁFICOS */
+
+.graficos {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 25px;
+}
+
+.grafico-card {
+    min-width: 0;
+    padding: 25px;
+    background: var(--card-bg, #fff);
+    border: 1px solid var(--border-color, #E2DFFA);
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+.grafico-card h2 {
+    margin: 0 0 20px;
+    font-size: 1.2rem;
+}
+
+.grafico {
+    width: 100%;
+    overflow-x: auto;
+}
+
+/* MENSAJES */
+
+.mensaje-error {
+    color: #c62828;
+}
+
+.mensaje-inicial {
+    margin-top: 40px;
+    text-align: center;
+}
+
+
+.estadisticas-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 30px 20px;
+}
+
+.estadisticas-header {
+    margin-bottom: 30px;
+}
+
+.estadisticas-header h1 {
+    margin-bottom: 10px;
+}
+
+.estadisticas-header p {
+    color: var(--text-muted, #6C757D);
+}
+
+
+/* RESPONSIVE */
+
+@media (max-width: 600px) {
+    .estadisticas-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .grafico-card {
+        padding: 15px;
+    }
+}

@@ -1,56 +1,69 @@
-<header class="barra-navegacion">
-    <div class="marca-contenedor">
-        <img src="logo.png" alt="Logo Patitas al refugio" class="logo-app" />
-        <span class="titulo-app">Patitas al refugio</span>
-    </div>
-
-    <div class="menu-navegacion">
-        <button class="boton-perfil" (click)="irAlFeed()">
-            🏠 Volver al feed
-        </button>
-
-        <button class="boton-perfil btn-logout" (click)="cerrarSesion()">
-            Cerrar sesión
-        </button>
-    </div>
-</header>
-
 <main class="contenedor-principal">
     
+
     @if (usuario) {
         <section class="perfil-header-card">
-            <div class="foto-perfil-wrapper">
-                @if (usuario.imagenPerfil) {
-                    <img
-                        [src]="usuario.imagenPerfil"
-                        alt="Foto de perfil"
-                        class="foto-perfil-img"
-                    />
-                }
+
+            <div class="perfil-portada">
+                <span>🐾 MI ESPACIO EN PATITAS</span>
             </div>
-            <div class="perfil-info">
-                <h2>{{ usuario.nombre || usuario.nombreUsuario }} {{ usuario.apellido || '' }}</h2>
-                
-                @if (usuario.nombreUsuario) {
-                    <p class="perfil-username">@{{ usuario.nombreUsuario }}</p>
-                }
-                
-                <p class="perfil-email">📧 {{ usuario.email }}</p>
 
-                @if (usuario.fechaNacimiento) {
-                    <p class="perfil-nacimiento">🎂 Cumpleaños: {{ usuario.fechaNacimiento }}</p>
-                }
+            <div class="perfil-contenido">
+                <div class="foto-perfil-wrapper">
+                    @if (usuario.imagenPerfil) {
+                        <img
+                            [src]="usuario.imagenPerfil"
+                            alt="Foto de perfil"
+                            class="foto-perfil-img"
+                        />
+                    } @else {
+                        <span class="avatar-placeholder">🐾</span>
+                    }
+                </div>
 
-                @if (usuario.descripcion) {
-                    <p class="perfil-descripcion"><em>"{{ usuario.descripcion }}"</em></p>
-                }
+                <div class="perfil-info">
+                    <h2>{{ usuario.nombre || usuario.nombreUsuario }} {{ usuario.apellido || '' }}</h2>
 
-                @if (usuario.perfil) {
-                    <p class="perfil-rol">Rol: <span class="badge-rol">{{ usuario.perfil }}</span></p>
-                }
+                    @if (usuario.nombreUsuario) {
+                        <p class="perfil-username">@{{ usuario.nombreUsuario }}</p>
+                    }
+
+                    <p class="perfil-email">📧 {{ usuario.email }}</p>
+
+                    @if (usuario.fechaNacimiento) {
+                        <p>🎂 Cumpleaños: {{ usuario.fechaNacimiento }}</p>
+                    }
+
+                    @if (usuario.descripcionBreve) {
+                        <p class="perfil-descripcion">{{ usuario.descripcionBreve }}</p>
+                    }
+
+                    @if (usuario.perfil) {
+                        <p class="perfil-rol">
+                            Rol: <span class="badge-rol">{{ usuario.perfil }}</span>
+                        </p>
+                    }
+
+                    <div class="acciones-perfil">
+                        <button type="button" class="btn-editar-perfil" (click)="abrirModalEditar()">
+                            ✏️ Editar perfil
+                        </button>
+
+                        <button type="button" class="btn-cambiar-foto" (click)="abrirModalFoto()">
+                            📷 Cambiar foto
+                        </button>
+
+                        @if (usuario.perfil === 'administrador') {
+                            <a routerLink="/admin-panel" class="btn-admin">
+                                🛠️ Panel de administración
+                            </a>
+                        }
+                    </div>
+                </div>
             </div>
         </section>
     }
+
 
     <section class="contenedor-feed">
         <div class="header-publicaciones">
@@ -128,3 +141,151 @@
 
 </section>
 </main>
+
+
+    @if (mostrarModalEditar) {
+    <div class="modal-backdrop">
+        <div class="modal-editar-perfil">
+
+        <div class="modal-encabezado">
+            <h2>✏️ Editar mi perfil</h2>
+            <p>Actualizá tus datos personales</p>
+        </div>
+
+        <form [formGroup]="formularioEditar"
+                (ngSubmit)="guardarPerfil()">
+
+            <div class="fila-formulario">
+            <div class="campo-formulario">
+                <label for="nombre">Nombre</label>
+                <input id="nombre" type="text"
+                    formControlName="nombre">
+
+                @if (formularioEditar.controls.nombre.invalid &&
+                    formularioEditar.controls.nombre.touched) {
+                <small>Ingresá un nombre válido (mínimo 2 caracteres).</small>
+                }
+            </div>
+
+            <div class="campo-formulario">
+                <label for="apellido">Apellido</label>
+                <input id="apellido" type="text"
+                    formControlName="apellido">
+
+                @if (formularioEditar.controls.apellido.invalid &&
+                    formularioEditar.controls.apellido.touched) {
+                <small>Ingresá un apellido válido (mínimo 2 caracteres).</small>
+                }
+            </div>
+            </div>
+
+            <div class="campo-formulario">
+            <label for="email">Correo electrónico</label>
+            <input id="email" type="email"
+                    formControlName="email">
+
+            @if (formularioEditar.controls.email.invalid &&
+                formularioEditar.controls.email.touched) {
+                <small>Ingresá un correo electrónico válido.</small>
+            }
+            </div>
+
+            <div class="campo-formulario">
+            <label for="nombreUsuario">Nombre de usuario</label>
+            <input id="nombreUsuario" type="text"
+                    formControlName="nombreUsuario">
+
+            @if (formularioEditar.controls.nombreUsuario.invalid &&
+                formularioEditar.controls.nombreUsuario.touched) {
+                <small>Debe tener al menos 3 caracteres.</small>
+            }
+            </div>
+
+            <div class="campo-formulario">
+            <label for="descripcionBreve">Sobre mí</label>
+            <textarea id="descripcionBreve"
+                        formControlName="descripcionBreve"
+                        rows="3"
+                        placeholder="Contanos algo sobre vos...">
+            </textarea>
+
+            @if (formularioEditar.controls.descripcionBreve.invalid &&
+                formularioEditar.controls.descripcionBreve.touched) {
+                <small>La descripción no puede superar los 300 caracteres.</small>
+            }
+            </div>
+
+            @if (errorEditarPerfil) {
+            <p class="error-formulario">{{ errorEditarPerfil }}</p>
+            }
+
+            <div class="modal-acciones">
+            <button type="button"
+                    class="btn-cancelar"
+                    [disabled]="guardandoPerfil"
+                    (click)="cerrarModalEditar()">
+                Cancelar
+            </button>
+
+            <button type="submit"
+                    class="btn-guardar"
+                    [disabled]="guardandoPerfil">
+                {{ guardandoPerfil ? 'Guardando...' : 'Guardar cambios' }}
+            </button>
+            </div>
+
+        </form>
+        </div>
+    </div>
+    }
+
+    @if (mostrarModalFoto) {
+    <div class="modal-backdrop">
+        <div class="modal-content modal-foto">
+
+        <h2>📷 Cambiar foto de perfil</h2>
+        <p>Elegí una imagen para personalizar tu perfil.</p>
+
+        <div class="vista-previa">
+            <img
+            [src]="vistaPreviaFoto || usuario?.imagenPerfil"
+            alt="Vista previa de foto de perfil"
+            />
+        </div>
+
+        <label for="nuevaFoto" class="label-foto">
+            Seleccionar imagen
+        </label>
+
+        <input
+            id="nuevaFoto"
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            (change)="seleccionarFoto($event)"
+        />
+
+        <small>Formatos JPG, PNG o WebP. Máximo 5 MB.</small>
+
+        @if (errorFoto) {
+            <p class="mensaje-error">{{ errorFoto }}</p>
+        }
+
+        <div class="modal-acciones">
+            <button type="button"
+                    class="btn-cancelar"
+                    [disabled]="guardandoFoto"
+                    (click)="cerrarModalFoto()">
+            Cancelar
+            </button>
+
+            <button type="button"
+                    class="btn-guardar-foto"
+                    [disabled]="!fotoSeleccionada || guardandoFoto"
+                    (click)="guardarFoto()">
+            {{ guardandoFoto ? 'Guardando...' : 'Guardar foto' }}
+            </button>
+        </div>
+
+        </div>
+    </div>
+    }

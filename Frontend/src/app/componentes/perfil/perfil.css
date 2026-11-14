@@ -1,97 +1,48 @@
-/* ==========================================
-   Barra de Navegación / Navbar
-   ========================================== */
-
-.barra-navegacion {
-    background-color: var(--primary-color);
-    padding: 1rem 2rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    box-shadow: 0 2px 8px rgba(140, 130, 234, 0.08);
-    margin-bottom: 2rem;
-}
-
-.marca-contenedor {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-}
-
-.logo-app {
-    width: 40px;
-    height: 40px;
-    object-fit: cover;
-    border-radius: 50%;
-}
-
-.titulo-app {
-    font-size: 1.25rem;
-    font-weight: 700;
-    color: #1f2937;
-}
-
-.menu-navegacion {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-}
-
-.menu-navegacion .boton-perfil {
-    width: 145px;
-    height: 40px;
-    box-sizing: border-box;
-    background-color: #f3f4f6;
-    border: 1px solid #d1d5db;
-    padding: 8px 12px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: 600;
-    color: #374151;
-    text-align: center;
-    transition: all 0.2s ease;
-}
-
-.menu-navegacion .boton-perfil:hover {
-    background-color: #e5e7eb;
-}
-
-.menu-navegacion .btn-logout:hover {
-    background-color: #fee2e2;
-    border-color: #fca5a5;
-    color: #dc2626;
-}
-/* ==========================================
-   Contenido Principal y Cabecera del Perfil
-   ========================================== */
 .contenedor-principal {
     max-width: 800px;
     margin: 0 auto;
-    padding: 0 1rem;
+    padding: 2rem 1rem;
     font-family: inherit;
-    color: var(--text-dark, #2D3142);
+    color: var(--text-dark);
 }
 
+
 .perfil-header-card {
-    background: var(--card-bg, #FFFFFF);
-    padding: 2rem;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(140, 130, 234, 0.08);
-    display: flex;
-    align-items: center;
-    gap: 2rem;
-    margin-bottom: 2rem;
+    background: var(--card-bg, #fff);
     border: 1px solid var(--border-color, #E2DFFA);
+    border-radius: 16px;
+    overflow: hidden;
+    margin-bottom: 30px;
+    box-shadow: 0 5px 18px rgba(140, 130, 234, 0.08);
+}
+
+.perfil-portada {
+    background: linear-gradient(120deg, #7565d8, #9588ed);
+    padding: 25px 30px;
+    color: white;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 2px;
+}
+
+.perfil-contenido {
+    display: flex;
+    align-items: flex-start;
+    gap: 28px;
+    padding: 30px;
 }
 
 .foto-perfil-wrapper {
-    width: 100px;
-    height: 100px;
+    width: 110px;
+    height: 110px;
     border-radius: 50%;
-    overflow: hidden;
     border: 3px solid var(--primary-color, #8C82EA);
+    background: #f0edff;
+    overflow: hidden;
     flex-shrink: 0;
-    background-color: var(--bg-light, #F1EFFE);
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .foto-perfil-img {
@@ -100,16 +51,97 @@
     object-fit: cover;
 }
 
+.avatar-placeholder {
+    font-size: 42px;
+}
+
+.perfil-info {
+    flex: 1;
+    min-width: 0;
+}
+
 .perfil-info h2 {
-    margin: 0 0 0.5rem 0;
-    font-size: 1.5rem;
+    margin: 0 0 8px;
+    font-size: 26px;
     color: var(--text-dark, #2D3142);
 }
 
-.perfil-email {
-    margin: 0;
-    color: var(--text-muted, #6C757D);
+.perfil-username {
+    color: #7565d8;
+    font-weight: 600;
 }
+
+.perfil-descripcion {
+    color: var(--text-muted, #6C757D);
+    line-height: 1.6;
+}
+
+.badge-rol {
+    background: #f0edff;
+    color: #6558a9;
+    border-radius: 20px;
+    padding: 5px 12px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.acciones-perfil {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 24px;
+}
+
+.btn-editar-perfil,
+.btn-cambiar-foto,
+.btn-admin {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 11px 16px;
+    border-radius: 9px;
+    font: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.btn-editar-perfil {
+    background: #8C82EA;
+    color: white;
+    border: none;
+}
+
+.btn-cambiar-foto,
+.btn-admin {
+    background: #f0edff;
+    color: #6558a9;
+    border: 1px solid #dcd5f5;
+}
+
+.btn-editar-perfil:hover {
+    background: #7565d8;
+}
+
+.btn-cambiar-foto:hover,
+.btn-admin:hover {
+    background: #e4deff;
+}
+
+@media (max-width: 600px) {
+    .perfil-contenido {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        padding: 24px;
+    }
+
+    .acciones-perfil {
+        justify-content: center;
+    }
+}
+
 
 /* ==========================================
    Sección de Publicaciones del Perfil
@@ -219,8 +251,6 @@
 }
 
 
-/* Paginador del perfil: mismo estilo que Publicaciones */
-
 .paginador {
     display: flex;
     justify-content: center;
@@ -248,4 +278,223 @@
 .paginador span {
     font-weight: 500;
     color: #374151;
+}
+
+
+/* MODAL EDITAR PERFIL */
+
+    .modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(28, 22, 58, 0.55);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    z-index: 2000;
+    }
+
+    .modal-editar-perfil {
+    background: #fff;
+    width: 100%;
+    max-width: 520px;
+    max-height: 90vh;
+    overflow-y: auto;
+    padding: 30px;
+    border-radius: 18px;
+    box-shadow: 0 15px 45px rgba(50, 40, 100, 0.2);
+    box-sizing: border-box;
+    }
+
+    .modal-encabezado {
+    margin-bottom: 25px;
+    }
+
+    .modal-encabezado h2 {
+    margin: 0 0 8px;
+    color: var(--text-dark);
+    }
+
+    .modal-encabezado p {
+    margin: 0;
+    color: var(--text-muted);
+    }
+
+    .fila-formulario {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    }
+
+    .campo-formulario {
+    margin-bottom: 18px;
+    }
+
+    .campo-formulario label {
+    display: block;
+    margin-bottom: 7px;
+    font-weight: 600;
+    color: var(--text-dark);
+    }
+
+    .campo-formulario input,
+    .campo-formulario textarea {
+    width: 100%;
+    padding: 11px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 9px;
+    font: inherit;
+    box-sizing: border-box;
+    background: #faf9ff;
+    }
+
+    .campo-formulario input:focus,
+    .campo-formulario textarea:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px #e9e5ff;
+    }
+
+    .campo-formulario small,
+    .error-formulario {
+    display: block;
+    color: #dc2626;
+    font-size: 12px;
+    margin-top: 5px;
+    }
+
+    .modal-acciones {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 25px;
+    }
+
+    .btn-cancelar,
+    .btn-guardar {
+    padding: 11px 18px;
+    border: none;
+    border-radius: 9px;
+    font-weight: 600;
+    cursor: pointer;
+    }
+
+    .btn-cancelar {
+    background: #f0edff;
+    color: #6558a9;
+    }
+
+    .btn-guardar {
+    background: var(--primary-color);
+    color: white;
+    }
+
+    .btn-guardar:hover {
+    background: var(--primary-hover);
+    }
+
+    .btn-guardar:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    }
+
+    @media (max-width: 500px) {
+    .fila-formulario {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+
+    .modal-editar-perfil {
+        padding: 22px;
+    }
+    }
+
+    .modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(30, 25, 55, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  z-index: 2000;
+}
+
+.modal-foto {
+  background: white;
+  width: 100%;
+  max-width: 420px;
+  padding: 30px;
+  border-radius: 18px;
+  text-align: center;
+  box-sizing: border-box;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+}
+
+.modal-foto h2 {
+  color: var(--text-dark);
+  margin-top: 0;
+}
+
+.modal-foto p,
+.modal-foto small {
+  color: var(--text-muted);
+}
+
+.vista-previa {
+  margin: 25px auto;
+}
+
+.vista-previa img {
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 4px solid var(--primary-color);
+}
+
+.label-foto {
+  display: block;
+  margin-bottom: 10px;
+  font-weight: 600;
+}
+
+.modal-foto input[type="file"] {
+  width: 100%;
+  margin-bottom: 12px;
+}
+
+.modal-acciones {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 25px;
+}
+
+.btn-cancelar,
+.btn-guardar-foto {
+  padding: 11px 18px;
+  border: none;
+  border-radius: 9px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-cancelar {
+  background: #f0edff;
+  color: #6558a9;
+}
+
+.btn-guardar-foto {
+  background: var(--primary-color);
+  color: white;
+}
+
+.btn-guardar-foto:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.modal-foto .mensaje-error {
+  color: #dc2626;
 }

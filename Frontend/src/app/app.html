@@ -1,37 +1,99 @@
+
 @if (cargandoSesion) {
     <div class="pantalla-carga">
         <div class="spinner"></div>
         <p>Verificando sesión...</p>
     </div>
+}
+
+<div [hidden]="cargandoSesion">
+
+
+    <!-- NAVBAR COMPARTIDO -->
+    @if (mostrarNavbar()) {
+        <header class="barra-navegacion">
+
+            <div class="marca-contenedor">
+                <img
+                    src="logo.png"
+                    alt="Logo Patitas al refugio"
+                    class="logo-app"
+                />
+                <span class="titulo-app">
+                    Patitas al refugio
+                </span>
+            </div>
+
+            <div class="menu-navegacion">
+
+                @if (rutaActual() === '/publicaciones') {
+                    <a routerLink="/perfil" class="boton-perfil">
+                        👤 Mi Perfil
+                    </a>
+                }
+
+                @if (rutaActual() === '/perfil') {
+                    <a routerLink="/publicaciones" class="boton-perfil">
+                        🏠 Volver al feed
+                    </a>
+                }
+
+                @if (rutaActual() === '/admin-panel') {
+                    <a routerLink="/estadisticas" class="boton-perfil">
+                        Ver estadísticas
+                    </a>
+                }
+
+                @if (rutaActual() === '/estadisticas') {
+                    <a routerLink="/admin-panel" class="boton-perfil">
+                        Volver a usuarios
+                    </a>
+                }
+
+                <button
+                    type="button"
+                    class="boton-perfil btn-logout"
+                    (click)="cerrarSesion()">
+                    Cerrar sesión
+                </button>
+
+            </div>
+        </header>
     }
 
-    <div [hidden]="cargandoSesion">
-    <router-outlet />
-    </div>
 
-    @if (mostrarModalSesion) {
+    <!-- CONTENIDO DE CADA PÁGINA -->
+    <router-outlet />
+
+</div>
+
+<!-- MODAL DE VENCIMIENTO DE SESIÓN -->
+@if (mostrarModalSesion) {
     <div class="modal-sesion-overlay">
         <div class="modal-sesion">
-        <h2>Tu sesión está por vencer</h2>
 
-        <p>
-            Tu sesión está próxima a finalizar.
-            ¿Querés extenderla por 15 minutos más?
-        </p>
+            <h2>Tu sesión está por vencer</h2>
 
-        <div class="modal-sesion-acciones">
-        <button
-        class="boton-cancelar"
-        (click)="cancelarRenovacion()">
-        Cancelar
-        </button>
-        
-            <button
-            class="boton-extender"
-            (click)="extenderSesion()">
-            Extender sesión
-            </button>
-        </div>
+            <p>
+                Tu sesión está próxima a finalizar.
+                ¿Querés extenderla por 15 minutos más?
+            </p>
+
+            <div class="modal-sesion-acciones">
+
+                <button
+                    class="boton-cancelar"
+                    (click)="cancelarRenovacion()">
+                    Cancelar
+                </button>
+
+                <button
+                    class="boton-extender"
+                    (click)="extenderSesion()">
+                    Extender sesión
+                </button>
+
+            </div>
         </div>
     </div>
 }

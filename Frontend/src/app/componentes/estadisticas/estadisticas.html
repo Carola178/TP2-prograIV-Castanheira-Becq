@@ -1,0 +1,101 @@
+
+<main class="estadisticas-container">
+
+    <header class="estadisticas-header">
+        <h1>Estadísticas de Patitas al Refugio</h1>
+        <p>Consultá la actividad de nuestra comunidad.</p>
+    </header>
+
+    <!-- FILTROS -->
+    <section class="filtros">
+
+        <div class="filtro-fecha">
+            <label for="desde">Desde:</label>
+            <input id="desde" type="date" [(ngModel)]="desde">
+        </div>
+
+        <div class="filtro-fecha">
+            <label for="hasta">Hasta:</label>
+            <input id="hasta" type="date" [(ngModel)]="hasta">
+        </div>
+
+        <button
+            type="button"
+            class="btn-filtrar"
+            (click)="cargarEstadisticas()"
+            [disabled]="cargando() || !desde || !hasta || desde > hasta">
+            {{ cargando() ? 'Cargando...' : 'Buscar estadísticas' }}
+        </button>
+
+    </section>
+
+    <!-- MENSAJES -->
+    @if (error()) {
+        <p class="mensaje-error">{{ error() }}</p>
+    }
+
+    @if (cargando()) {
+        <p class="mensaje-inicial">Cargando estadísticas...</p>
+    }
+
+    <!-- GRÁFICOS -->
+    @if (busquedaRealizada()) {
+
+        <div class="graficos">
+
+            <section class="grafico-card">
+                <h2>Publicaciones realizadas por usuario</h2>
+
+                <div class="grafico">
+                    <canvas
+                        baseChart
+                        width="600"
+                        height="300"
+                        [data]="graficoUsuarios"
+                        [options]="opcionesVerticales"
+                        [type]="'bar'">
+                    </canvas>
+                </div>
+            </section>
+
+            <section class="grafico-card">
+                <h2>Comentarios realizados por fecha</h2>
+
+                <div class="grafico">
+                    <canvas
+                        baseChart
+                        width="600"
+                        height="300"
+                        [data]="graficoComentarios"
+                        [options]="opcionesHorizontales"
+                        [type]="'bar'">
+                    </canvas>
+                </div>
+            </section>
+
+            <section class="grafico-card">
+                <h2>Comentarios por publicación</h2>
+
+                <div class="grafico">
+                    <canvas
+                        baseChart
+                        width="600"
+                        height="300"
+                        [data]="graficoPublicaciones"
+                        [options]="opcionesVerticales"
+                        [type]="'bar'">
+                    </canvas>
+                </div>
+            </section>
+
+        </div>
+
+    } @else if (!cargando() && !error()) {
+
+        <p class="mensaje-inicial">
+            Seleccioná un rango de fechas para visualizar las estadísticas.
+        </p>
+
+    }
+
+</main>

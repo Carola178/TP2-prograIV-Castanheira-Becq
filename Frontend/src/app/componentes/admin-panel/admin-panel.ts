@@ -3,11 +3,13 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import {AdminPanelService, UsuarioAdmin, CrearUsuarioAdmin} from '../../services/admin-panel';
 import { Auth } from '../../services/auth';
 import { passwordMatchValidator } from '../../validators/password-validator';
+import { RouterLink } from '@angular/router';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-admin-panel',
   standalone: true,
-  imports: [ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './admin-panel.html',
   styleUrl: './admin-panel.css'
 })
@@ -96,6 +98,14 @@ export class AdminPanel implements OnInit {
   esUsuarioActual(id: string): boolean {
     const actual = this.auth.usuarioActual;
     return (actual?._id ?? actual?.id) === id;
+  }
+
+    get totalActivos(): number {
+    return this.usuarios().filter(usuario => usuario.activo !== false).length;
+  }
+
+  get totalInactivos(): number {
+    return this.usuarios().filter(usuario => usuario.activo === false).length;
   }
 
   abrirModalDeshabilitar(usuario: UsuarioAdmin): void {

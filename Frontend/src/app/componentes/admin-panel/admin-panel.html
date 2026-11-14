@@ -1,47 +1,39 @@
-<nav class="barra-navegacion">
-
-    <div class="marca-contenedor">
-        <img
-        src="logo.png"
-        alt="Logo Patitas al Refugio"
-        class="logo-app"
-        />
-
-        <span class="titulo-app">Patitas al Refugio</span>
-    </div>
-
-    <div class="menu-navegacion">
-
-        <a routerLink="/publicaciones" class="boton-perfil">
-        Publicaciones
-        </a>
-
-        <button
-        type="button"
-        class="boton-perfil btn-logout"
-        (click)="cerrarSesion()">
-        Cerrar sesión
-        </button>
-
-    </div>
-
-</nav>
-
-
 <div class="admin-container">
 
-    <h1>Panel de Administración</h1>
-    <p>Gestión de usuarios de Patitas al Refugio</p>
+    <header class="admin-banner">
+        <span class="admin-etiqueta">🐾 GESTIÓN DE LA COMUNIDAD</span>
+        <h1>Panel de administración</h1>
+        <p>Administrá los usuarios de Patitas al Refugio.</p>
+        <span class="admin-decoracion">🐾</span>
+    </header>
+
+    <div class="resumen-admin">
+        <div class="resumen-card">
+        <span>👥 Usuarios registrados</span>
+        <strong>{{ usuarios().length }}</strong>
+        </div>
+
+        <div class="resumen-card">
+        <span>✅ Usuarios activos</span>
+        <strong>{{ totalActivos }}</strong>
+        </div>
+
+        <div class="resumen-card">
+        <span>🚫 Usuarios inactivos</span>
+        <strong>{{ totalInactivos }}</strong>
+        </div>
+    </div>
 
     <section class="usuarios-section">
-
         <div class="usuarios-encabezado">
-        <h2>Usuarios registrados</h2>
+        <div>
+            <h2>Usuarios registrados</h2>
+            <p>Gestioná las cuentas de tu comunidad.</p>
+        </div>
 
-        <button
-            type="button"
-            class="btn-crear-usuario"
-            (click)="abrirModalCrearUsuario()">
+        <button type="button"
+                class="btn-crear-usuario"
+                (click)="abrirModalCrearUsuario()">
             + Crear usuario
         </button>
         </div>
@@ -56,70 +48,78 @@
 
         @if (cargando()) {
         <p>Cargando usuarios...</p>
-        }
-
-        @if (!cargando()) {
-
-        <table class="tabla-usuarios">
+        } @else {
+        <div class="tabla-contenedor">
+            <table class="tabla-usuarios">
             <thead>
-            <tr>
+                <tr>
                 <th>Nombre</th>
                 <th>Usuario</th>
                 <th>Email</th>
                 <th>Perfil</th>
                 <th>Estado</th>
                 <th>Acciones</th>
-            </tr>
+                </tr>
             </thead>
 
             <tbody>
-            @for (usuario of usuarios(); track usuario._id) {
+                @for (usuario of usuarios(); track usuario._id) {
                 <tr>
-                <td>{{ usuario.nombre }} {{ usuario.apellido }}</td>
-                <td>{{ usuario.nombreUsuario }}</td>
-                <td>{{ usuario.email }}</td>
-                <td>{{ usuario.perfil }}</td>
+                    <td>
+                    <div class="usuario-nombre">
+                        <span class="usuario-avatar">
+                        {{ usuario.nombre.charAt(0).toUpperCase() }}
+                        </span>
+                        <strong>{{ usuario.nombre }} {{ usuario.apellido }}</strong>
+                    </div>
+                    </td>
 
-                <td>
+                    <td>{{ usuario.nombreUsuario }}</td>
+                    <td>{{ usuario.email }}</td>
+
+                    <td>
+                    <span class="badge-perfil">
+                        {{ usuario.perfil }}
+                    </span>
+                    </td>
+
+                    <td>
                     @if (usuario.activo !== false) {
-                    <span class="estado-activo">Activo</span>
+                        <span class="estado-activo">● Activo</span>
                     } @else {
-                    <span class="estado-inactivo">Inactivo</span>
+                        <span class="estado-inactivo">● Inactivo</span>
                     }
-                </td>
+                    </td>
 
-                <td>
+                    <td>
                     @if (usuario.activo !== false) {
-                    <button
-                        type="button"
-                        class="btn-deshabilitar"
-                        [disabled]="usuarioProcesando() !== null || esUsuarioActual(usuario._id)"
-                        (click)="abrirModalDeshabilitar(usuario)">
+                        <button type="button"
+                                class="btn-deshabilitar"
+                                [disabled]="usuarioProcesando() !== null || esUsuarioActual(usuario._id)"
+                                (click)="abrirModalDeshabilitar(usuario)">
                         {{ usuarioProcesando() === usuario._id ? 'Procesando...' : 'Deshabilitar' }}
-                    </button>
+                        </button>
                     } @else {
-                    <button
-                        type="button"
-                        class="btn-habilitar"
-                        [disabled]="usuarioProcesando() !== null"
-                        (click)="habilitarUsuario(usuario)">
+                        <button type="button"
+                                class="btn-habilitar"
+                                [disabled]="usuarioProcesando() !== null"
+                                (click)="habilitarUsuario(usuario)">
                         {{ usuarioProcesando() === usuario._id ? 'Procesando...' : 'Habilitar' }}
-                    </button>
+                        </button>
                     }
-                </td>
+                    </td>
                 </tr>
-            } @empty {
+                } @empty {
                 <tr>
-                <td colspan="6">No hay usuarios registrados.</td>
+                    <td colspan="6">No hay usuarios registrados.</td>
                 </tr>
-            }
+                }
             </tbody>
-        </table>
+            </table>
+        </div>
         }
-
     </section>
     </div>
-
 
     @if (modalConfirmacion()) {
     <div class="modal-overlay">

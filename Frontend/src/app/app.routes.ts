@@ -39,6 +39,12 @@ export const routes: Routes = [
         loadComponent: () => import('./componentes/admin-panel/admin-panel').then(m => m.AdminPanel)
     },
     {
+    path: 'estadisticas',
+    canActivate: [AdminGuard],
+    loadComponent: () =>
+            import('./componentes/estadisticas/estadisticas').then(m => m.Estadisticas)
+    },
+    {
         path: '',
         redirectTo: 'login',
         pathMatch: 'full'

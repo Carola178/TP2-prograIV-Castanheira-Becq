@@ -131,6 +131,19 @@ public vencimiento$ = this.vencimientoSubject.asObservable();
   getPerfil(id: string): Observable<any> {
   return this.http.get<any>(`${this.apiUrl}/perfil/${id}`, {
     withCredentials: true
-  });
+    });
+  }
+
+
+  actualizarPerfil(datos: FormData): Observable<any> {
+    return this.http.patch<any>(
+      `${this.apiUrl}/perfil`,
+      datos,
+      { withCredentials: true }
+    ).pipe(
+      tap(usuarioActualizado => {
+        this.currentUserSubject.next(usuarioActualizado);
+      })
+    );
   }
 }

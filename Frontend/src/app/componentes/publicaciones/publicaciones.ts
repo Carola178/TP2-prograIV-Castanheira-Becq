@@ -407,12 +407,4 @@ export class Publicaciones implements OnInit {
   cerrarModalError(): void {
     this.mostrarModalError = false;
   }
-
-  irAMiPerfil(): void {
-    this.router.navigate(['/perfil']);
-  }
-
-  cerrarSesion(): void {
-    this.authService.cerrarSesion();
-  }
 }
