@@ -19,7 +19,7 @@ export interface Publicacion {
   urlImagen?: string;
   autor: string;
   nombreAutor?: string;
-  avatarAutor?: string;
+  imagenPerfilAutor?: string;
   cantidadMeGusta: number;
   leGustaAlUsuarioActual: boolean;
   cantidadComentarios?: number;
@@ -119,7 +119,7 @@ export class Publicaciones implements OnInit {
             ? `${pub.autor.nombre || ''} ${pub.autor.apellido || ''}`.trim()
             : 'Usuario',
 
-          avatarAutor: pub.autor && typeof pub.autor === 'object'
+          imagenPerfilAutor: pub.autor && typeof pub.autor === 'object'
             ? pub.autor.imagenPerfil
             : '',
 

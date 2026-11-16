@@ -63,12 +63,17 @@
 
                     <article class="tarjeta-publicacion" appResaltarPublicacion>
 
-                        <!-- AUTOR -->
-                        <div class="autor-header">
-
-                            <div class="autor-avatar">
+                        <div class="autor-perfil">
+                            @if (pub.imagenPerfilAutor) {
+                                <img
+                                    [src]="pub.imagenPerfilAutor"
+                                    alt="Foto de perfil del autor"
+                                    class="autor-perfil-img"
+                                >
+                            } @else {
                                 <span>🐾</span>
-                            </div>
+                            }
+                        </div>
 
                             <div>
                                 <span class="nombre-autor">
