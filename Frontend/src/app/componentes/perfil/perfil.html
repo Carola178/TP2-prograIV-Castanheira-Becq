@@ -289,3 +289,51 @@
         </div>
     </div>
     }
+
+
+@if (mostrarModalEliminar) {
+  <div class="modal-backdrop">
+    <div
+      class="modal-eliminar-publicacion"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="titulo-eliminar"
+    >
+
+      <h2 id="titulo-eliminar">
+        Deshabilitar publicación
+      </h2>
+
+      <p>
+        ¿Estás seguro de que querés deshabilitar esta
+        publicación? La publicación y sus comentarios
+        dejarán de estar disponibles.
+      </p>
+
+      @if (errorEliminarPublicacion) {
+        <p class="error-eliminar">
+          {{ errorEliminarPublicacion }}
+        </p>
+      }
+
+      <div class="acciones-eliminar">
+        <button
+          type="button"
+          class="btn-cancelar-eliminar"
+          [disabled]="eliminandoPublicacion"
+          (click)="cerrarModalEliminar()">
+          Cancelar
+        </button>
+
+        <button
+          type="button"
+          class="btn-confirmar-eliminar"
+          [disabled]="eliminandoPublicacion"
+          (click)="eliminarPublicacionConfirmada()">
+          {{ eliminandoPublicacion ? 'Deshabilitando...' : 'Deshabilitar' }}
+        </button>
+      </div>
+
+    </div>
+  </div>
+}

@@ -498,3 +498,87 @@
 .modal-foto .mensaje-error {
   color: #dc2626;
 }
+
+
+/* ==========================================
+   MODAL DESHABILITAR PUBLICACIÓN
+   ========================================== */
+
+.modal-eliminar-publicacion {
+    background: #ffffff;
+    width: 100%;
+    max-width: 345px;
+    padding: 28px 26px 24px;
+    border-radius: 14px;
+    text-align: center;
+    box-sizing: border-box;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+}
+
+.modal-eliminar-publicacion h2 {
+    margin: 0 0 18px;
+    font-size: 17px;
+    font-weight: 700;
+    color: #2D3142;
+}
+
+.modal-eliminar-publicacion > p {
+    color: #6C757D;
+    font-size: 14px;
+    line-height: 1.5;
+    margin: 0;
+}
+
+.acciones-eliminar {
+    display: flex;
+    justify-content: center;
+    gap: 9px;
+    margin-top: 20px;
+}
+
+.btn-cancelar-eliminar,
+.btn-confirmar-eliminar {
+    padding: 9px 15px;
+    border: none;
+    border-radius: 7px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.btn-cancelar-eliminar {
+    background: #E5E7EB;
+    color: #374151;
+}
+
+.btn-cancelar-eliminar:hover {
+    background: #D1D5DB;
+}
+
+.btn-confirmar-eliminar {
+    background: #E63946;
+    color: #ffffff;
+}
+
+.btn-confirmar-eliminar:hover {
+    background: #C92A38;
+}
+
+.btn-cancelar-eliminar:disabled,
+.btn-confirmar-eliminar:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.modal-eliminar-publicacion .error-eliminar {
+    color: #DC2626;
+    font-size: 13px;
+    margin-top: 14px;
+}
+
+@media (max-width: 400px) {
+    .modal-eliminar-publicacion {
+        padding: 24px 18px;
+    }
+}

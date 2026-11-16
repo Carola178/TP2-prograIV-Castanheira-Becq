@@ -58,6 +58,11 @@ export class Perfil implements OnInit {
   guardandoFoto = false;
   errorFoto = '';
 
+  mostrarModalEliminar = false;
+  publicacionAEliminar: string | null = null;
+  eliminandoPublicacion = false;
+  errorEliminarPublicacion = '';
+
   constructor(
     private router: Router,
     private publicacionesService: PublicacionesService,
@@ -346,34 +351,54 @@ this.authService.actualizarPerfil(datos).subscribe({
   }
 
   confirmarEliminacion(idPublicacion: string): void {
-    if (
-      confirm('¿Estás seguro de que deseas eliminar esta publicación?')
-    ) {
-      this.publicacionesService
-        .eliminarPublicacion(idPublicacion)
-        .subscribe({
-          next: () => {
-            if (
-              this.publicaciones.length === 1 &&
-              this.paginaActual > 1
-            ) {
-              this.paginaActual--;
-            }
-            this.cargarPublicacionesUsuario();
-          },
+    this.publicacionAEliminar = idPublicacion;
+    this.errorEliminarPublicacion = '';
+    this.mostrarModalEliminar = true;
+  }
 
-          error: (err) => {
-            console.error(
-              'Error al eliminar la publicación:',
-              err
-            );
+  cerrarModalEliminar(): void {
+    if (this.eliminandoPublicacion) return;
 
-            alert(
-              'No se pudo eliminar la publicación. Inténtalo de nuevo.'
-            );
+    this.mostrarModalEliminar = false;
+    this.publicacionAEliminar = null;
+    this.errorEliminarPublicacion = '';
+  }
+
+  eliminarPublicacionConfirmada(): void {
+    if (!this.publicacionAEliminar || this.eliminandoPublicacion) return;
+
+    this.eliminandoPublicacion = true;
+    this.errorEliminarPublicacion = '';
+
+    this.publicacionesService
+      .eliminarPublicacion(this.publicacionAEliminar)
+      .subscribe({
+        next: () => {
+          this.eliminandoPublicacion = false;
+          this.mostrarModalEliminar = false;
+          this.publicacionAEliminar = null;
+
+          if (
+            this.publicaciones.length === 1 &&
+            this.paginaActual > 1
+          ) {
+            this.paginaActual--;
           }
-        });
-    }
+
+          this.cargarPublicacionesUsuario();
+          this.cdr.detectChanges();
+        },
+
+        error: (err) => {
+          console.error('Error al eliminar la publicación:', err);
+
+          this.errorEliminarPublicacion =
+            'No se pudo deshabilitar la publicación. Intentá nuevamente.';
+
+          this.eliminandoPublicacion = false;
+          this.cdr.detectChanges();
+        }
+      });
   }
 
 }
