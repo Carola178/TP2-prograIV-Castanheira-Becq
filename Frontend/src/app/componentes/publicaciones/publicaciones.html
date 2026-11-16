@@ -61,7 +61,7 @@
 
                 @for (pub of publicaciones; track pub.id) {
 
-                    <article class="tarjeta-publicacion">
+                    <article class="tarjeta-publicacion" appResaltarPublicacion>
 
                         <!-- AUTOR -->
                         <div class="autor-header">
@@ -70,13 +70,13 @@
                                 <span>🐾</span>
                             </div>
 
-                            <div class="autor-datos">
+                            <div>
                                 <span class="nombre-autor">
-                                    {{ pub.nombreAutor || 'Usuario' }}
+                                    {{ (pub.nombreAutor || 'Usuario') | formatoNombre }}
                                 </span>
 
                                 <span class="fecha-publicacion">
-                                    {{ pub.createdAt | date:'dd/MM/yyyy, HH:mm' }}
+                                    {{ pub.createdAt | tiempoTranscurrido }}
                                 </span>
                             </div>
 
@@ -87,7 +87,24 @@
 
                             <h3>{{ pub.titulo }}</h3>
 
-                            <p>{{ pub.descripcion }}</p>
+                            <p>
+                                {{
+                                    publicacionesExpandidas.has(pub.id)
+                                    ? pub.descripcion
+                                    : (pub.descripcion | resumenTexto:120)
+                                }}
+                                </p>
+
+                                @if (pub.descripcion.length > 120) {
+                                <button
+                                    type="button"
+                                    class="btn-ver-mas"
+                                    (click)="alternarDescripcion(pub.id)">
+
+                                    {{ publicacionesExpandidas.has(pub.id) ? 'Ver menos' : 'Ver más' }}
+
+                                </button>
+                                }
 
                             @if (pub.urlImagen) {
                                 <img
@@ -223,6 +240,8 @@
                         type="text"
                         id="titulo"
                         formControlName="titulo"
+                        appAutoFocus
+                        appResaltarInvalido
                         placeholder="Ej: ¡Nuevo hogar para perrito!">
 
                     @if (publicacionForm.get('titulo')?.hasError('required')
@@ -244,6 +263,7 @@
                         id="descripcion"
                         formControlName="descripcion"
                         rows="3"
+                        appResaltarInvalido
                         placeholder="Contanos los detalles...">
                     </textarea>
 

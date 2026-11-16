@@ -28,6 +28,7 @@ export class App implements OnInit, OnDestroy {
   private suscripcionRutas?: Subscription;
 
   private readonly tiempoRestanteAviso = 5 * 60 * 1000;
+  // private readonly tiempoRestanteAviso = 30 * 1000;
 
   constructor(
     private authService: Auth,
@@ -86,54 +87,39 @@ export class App implements OnInit, OnDestroy {
   }
 
   actualizarNavbar(ruta: string): void {
-
     const rutaLimpia = ruta.split('?')[0].split('#')[0];
-
     this.rutaActual.set(rutaLimpia);
-
     const rutasConNavbar = [
       '/publicaciones',
       '/perfil',
       '/admin-panel',
       '/estadisticas'
     ];
-
     this.mostrarNavbar.set(
       rutasConNavbar.includes(rutaLimpia)
     );
   }
 
   programarTemporizadores(expiraEn: number): void {
-
     this.detenerTemporizador();
-
     const ahora = Date.now();
-
     const tiempoHastaAviso =
       expiraEn - ahora - this.tiempoRestanteAviso;
-
     const tiempoHastaVencimiento =
       expiraEn - ahora;
-
     if (tiempoHastaVencimiento <= 0) {
       this.finalizarSesion();
       return;
     }
-
     if (tiempoHastaAviso > 0) {
-
       this.temporizadorAviso = setTimeout(() => {
         this.mostrarModalSesion = true;
         this.cdr.detectChanges();
       }, tiempoHastaAviso);
-
     } else {
-
       this.mostrarModalSesion = true;
       this.cdr.detectChanges();
-
     }
-
     this.temporizadorVencimiento = setTimeout(() => {
       this.finalizarSesion();
     }, tiempoHastaVencimiento);
@@ -141,17 +127,14 @@ export class App implements OnInit, OnDestroy {
 
 
   detenerTemporizador(): void {
-
     if (this.temporizadorAviso) {
       clearTimeout(this.temporizadorAviso);
       this.temporizadorAviso = undefined;
     }
-
     if (this.temporizadorVencimiento) {
       clearTimeout(this.temporizadorVencimiento);
       this.temporizadorVencimiento = undefined;
     }
-
     this.mostrarModalSesion = false;
   }
 
@@ -166,25 +149,19 @@ export class App implements OnInit, OnDestroy {
   }
 
   extenderSesion(): void {
-
     this.authService.refrescar().subscribe({
       next: () => {
-
         this.mostrarModalSesion = false;
         this.cdr.detectChanges();
-
       },
       error: (err) => {
-
         console.error('Error al renovar sesión:', err);
         this.finalizarSesion();
-
       }
     });
   }
 
   finalizarSesion(): void {
-
     this.detenerTemporizador();
     this.authService.limpiarSesion();
 

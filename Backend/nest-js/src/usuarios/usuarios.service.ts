@@ -17,10 +17,6 @@ export class UsuariosService {
         return this.usuarioModel.findById(id).populate('publicaciones').exec();
     }
 
-    // async update(id: string, updateUsuarioDto: UpdateUsuarioDto){
-    //     return this.usuarioModel.findByIaAndUpdate(id, updateUsuarioDto, {upsert: true, new: true}).exec();
-    // }
-
     async remove(id:string){
         return this.usuarioModel.deleteOne({_id: id}).exec();
 

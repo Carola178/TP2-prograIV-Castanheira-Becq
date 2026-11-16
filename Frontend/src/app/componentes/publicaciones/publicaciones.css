@@ -433,3 +433,40 @@
         margin-left: 0;
     }
 }
+
+    .btn-ver-mas {
+    background: transparent;
+    border: none;
+    color: #7568dc;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 4px 0;
+    margin-bottom: 12px;
+    }
+
+    .btn-ver-mas:hover {
+    text-decoration: underline;
+    }
+
+    .tarjeta-publicacion {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .tarjeta-publicacion.publicacion-resaltada {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(117, 104, 220, 0.18);
+    }
+
+    input.campo-invalido,
+    textarea.campo-invalido {
+    border: 2px solid #dc3545;
+    background-color: #fff5f5;
+    outline: none;
+    }
+
+    input.campo-invalido:focus,
+    textarea.campo-invalido:focus {
+    border-color: #dc3545;
+    box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.12);
+    }

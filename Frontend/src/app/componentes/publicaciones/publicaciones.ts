@@ -1,4 +1,3 @@
-
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormControl, FormGroup, Validators } from '@angular/forms';
@@ -6,6 +5,12 @@ import { Auth } from '../../services/auth';
 import { Router } from '@angular/router';
 import { PublicacionesService } from '../../services/publicaciones';
 import { Comentarios } from '../comentarios/comentarios';
+import { TiempoTranscurridoPipe } from '../../pipes/tiempo-transcurrido.pipe';
+import { ResumenTextoPipe } from '../../pipes/resumen-texto.pipe';
+import { FormatoNombrePipe } from '../../pipes/formato-nombre.pipe';
+import { ResaltarPublicacionDirective } from '../../directivas/resaltar-publicacion.directive';
+import { AutoFocusDirective } from '../../directivas/auto-foco.directive';
+import { ResaltarInvalidoDirective } from '../../directivas/resaltar-invalido.directive';
 
 export interface Publicacion {
   id: string;
@@ -24,7 +29,7 @@ export interface Publicacion {
 @Component({
   selector: 'app-publicaciones',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, Comentarios],
+  imports: [CommonModule, ReactiveFormsModule, Comentarios, TiempoTranscurridoPipe, ResumenTextoPipe, FormatoNombrePipe, ResaltarPublicacionDirective, AutoFocusDirective, ResaltarInvalidoDirective],
   templateUrl: './publicaciones.html',
   styleUrls: ['./publicaciones.css']
 })
@@ -53,6 +58,8 @@ export class Publicaciones implements OnInit {
 
   mostrarModalCrear: boolean = false;
   archivoSeleccionado: File | null = null;
+
+  publicacionesExpandidas: Set<string> = new Set();
 
   publicacionForm = new FormGroup({
     titulo: new FormControl('', {
@@ -402,6 +409,14 @@ export class Publicaciones implements OnInit {
         this.cdr.detectChanges();
       }
     });
+  }
+
+  alternarDescripcion(idPublicacion: string): void {
+    if (this.publicacionesExpandidas.has(idPublicacion)) {
+      this.publicacionesExpandidas.delete(idPublicacion);
+    } else {
+      this.publicacionesExpandidas.add(idPublicacion);
+    }
   }
 
   cerrarModalError(): void {

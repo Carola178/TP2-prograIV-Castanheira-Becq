@@ -26,10 +26,8 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
             !esLogout
         ) {
             console.warn('Sesión inválida o vencida. Redirigiendo al login.');
-
             router.navigateByUrl('/login');
         }
-
         return throwError(() => error);
         })
     );

@@ -96,6 +96,7 @@ export class AutenticacionService {
 
         const token = await this.jwtService.signAsync(payload, {
             expiresIn: '15m'
+            // expiresIn: '1m'
         });
 
         const tokenDecodificado = this.jwtService.decode(token) as {
@@ -121,6 +122,7 @@ export class AutenticacionService {
             secure: esProduccion,
             sameSite: esProduccion ? 'none' : 'lax',
             maxAge: 1000 * 60 * 15,
+            // maxAge: 1000 * 60,
             path: '/',
         });
     }
@@ -149,6 +151,7 @@ export class AutenticacionService {
         });
         const { contrasena, ...usuarioSeguro } = usuario.toObject();
         const expiraEn = Date.now() + 15 * 60 * 1000;
+        // const expiraEn = Date.now() + 60 * 1000;
         return {
             token,
             usuario: usuarioSeguro,

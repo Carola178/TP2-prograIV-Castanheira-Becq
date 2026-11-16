@@ -34,7 +34,6 @@ export interface ComentariosPorPublicacion {
         .set('hasta', hasta);
     }
 
-    // 1. Publicaciones por usuario
     publicacionesPorUsuario(
         desde: string,
         hasta: string
@@ -49,7 +48,6 @@ export interface ComentariosPorPublicacion {
         );
     }
 
-    // 2. Comentarios por fecha
     comentariosPorFecha(
         desde: string,
         hasta: string

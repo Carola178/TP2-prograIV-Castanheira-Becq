@@ -13,12 +13,11 @@ export class FileService {
         });
     }
 
-    // Agregamos folderName con un valor por defecto 'perfiles'
     async cloudinaryUploader(file: Express.Multer.File, folderName: string = 'perfiles'): Promise<string> {
         return new Promise<string>((resolve, reject) => {
             const uploadStream = cloudinary.uploader.upload_stream(
                 {
-                    folder: folderName, // <--- Acá usa dinámicamente la carpeta que le pases
+                    folder: folderName, 
                     public_id: parse(file.originalname).name,
                     resource_type: 'image',
                 },
