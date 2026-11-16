@@ -13,6 +13,7 @@ async function bootstrap() {
   app.enableCors({
     origin: [
       'http://localhost:4200',
+      'http://localhost:8080',
       'https://patitas-al-refugio-angular.vercel.app',
       'https://patitas-al-refugio-angular-i4pl57ys8-progra-iv-castanheira-becq.vercel.app'
     ],
