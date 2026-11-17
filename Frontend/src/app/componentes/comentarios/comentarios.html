@@ -1,23 +1,16 @@
+<div class="pagina-comentarios">
 
-<div class="pagina-comentarios"
-     [class.modo-integrado]="modoIntegrado">
-
-    <!-- Solo mostrar encabezado en página individual -->
-    @if (!modoIntegrado) {
         <header class="encabezado-comentarios">
             <h2>🐾 Patitas al refugio</h2>
 
-            <button (click)="volverAlFeed()">
+            <button type="button" (click)="volverAlFeed()">
                 ← Volver al feed
             </button>
         </header>
-    }
 
-    <main class="contenedor-comentarios">
+        <main class="contenedor-comentarios">
 
-        <!-- Publicación completa: solo página individual -->
-        @if (!modoIntegrado) {
-
+            <!-- PUBLICACIÓN COMPLETA -->
             @if (cargandoPublicacion) {
                 <p>Cargando publicación...</p>
             } @else if (publicacion) {
@@ -53,7 +46,6 @@
 
                 </article>
             }
-        }
 
         <!-- COMENTARIOS -->
         <section class="seccion-comentarios">

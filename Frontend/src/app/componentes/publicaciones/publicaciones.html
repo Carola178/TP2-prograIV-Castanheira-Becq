@@ -142,13 +142,9 @@
                             <button
                                 type="button"
                                 class="boton-comentarios"
-                                [class.activo]="publicacionComentariosAbierta === pub.id"
-                                (click)="alternarComentarios(pub.id)">
+                                (click)="irAComentarios(pub.id)">
 
-                                💬
-                                {{ publicacionComentariosAbierta === pub.id
-                                    ? 'Ocultar comentarios'
-                                    : 'Ver comentarios' }}
+                                💬 Ver comentarios
 
                             </button>
 
@@ -166,19 +162,7 @@
                             }
 
                         </footer>
-
-                        <!-- COMENTARIOS -->
-                        @if (publicacionComentariosAbierta === pub.id) {
-
-                            <app-comentarios
-                                [idPublicacion]="pub.id"
-                                [modoIntegrado]="true">
-                            </app-comentarios>
-
-                        }
-
                     </article>
-
                 }
 
             </div>

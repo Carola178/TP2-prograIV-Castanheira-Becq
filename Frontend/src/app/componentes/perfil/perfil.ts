@@ -30,13 +30,10 @@ export class Perfil implements OnInit {
   usuario: any = null;
   publicaciones: Publicacion[] = [];
 
-  paginaActual: number = 1;
-  totalPaginas: number = 1;
   idUsuarioActual: string = '';
   cargando: boolean = true;
 
   limite: number = 3;
-  offset: number = 0;
 
   mostrarModalEditar = false;
   guardandoPerfil = false;
@@ -165,32 +162,24 @@ this.authService.actualizarPerfil(datos).subscribe({
 
     this.guardandoPerfil = false;
     this.cdr.detectChanges();
-  }
-});
+      }
+    });
   }
 
 
   cargarPublicacionesUsuario(): void {
     this.cargando = true;
 
-    this.offset = (this.paginaActual - 1) * this.limite;
-
     this.publicacionesService.obtenerPublicaciones({
       idUsuario: this.idUsuarioActual,
       ordenarPor: 'fechaCreacion',
       limite: this.limite,
-      offset: this.offset
+      offset: 0
     }).subscribe({
       next: (data: any) => {
         const lista = Array.isArray(data)
           ? data
           : (data?.datos || data?.publicaciones || data?.docs || []);
-
-        const totalRegistros =
-          data?.totalDocs ?? data?.total ?? lista.length;
-
-        this.totalPaginas =
-          Math.max(1, Math.ceil(totalRegistros / this.limite));
 
         this.publicaciones = lista.map((pub: any) => ({
           id: pub._id || pub.id,
@@ -314,17 +303,6 @@ this.authService.actualizarPerfil(datos).subscribe({
     });
   }
 
-  cambiarPagina(nuevaPagina: number): void {
-    if (
-      nuevaPagina >= 1 &&
-      nuevaPagina <= this.totalPaginas &&
-      nuevaPagina !== this.paginaActual
-    ) {
-      this.paginaActual = nuevaPagina;
-      this.cargarPublicacionesUsuario();
-    }
-  }
-
   alternarMeGusta(publicacion: Publicacion): void {
     const accion = publicacion.leGustaAlUsuarioActual
       ? this.publicacionesService.quitarMeGusta(publicacion.id)
@@ -364,6 +342,7 @@ this.authService.actualizarPerfil(datos).subscribe({
     this.errorEliminarPublicacion = '';
   }
 
+
   eliminarPublicacionConfirmada(): void {
     if (!this.publicacionAEliminar || this.eliminandoPublicacion) return;
 
@@ -377,13 +356,6 @@ this.authService.actualizarPerfil(datos).subscribe({
           this.eliminandoPublicacion = false;
           this.mostrarModalEliminar = false;
           this.publicacionAEliminar = null;
-
-          if (
-            this.publicaciones.length === 1 &&
-            this.paginaActual > 1
-          ) {
-            this.paginaActual--;
-          }
 
           this.cargarPublicacionesUsuario();
           this.cdr.detectChanges();
@@ -400,5 +372,4 @@ this.authService.actualizarPerfil(datos).subscribe({
         }
       });
   }
-
 }

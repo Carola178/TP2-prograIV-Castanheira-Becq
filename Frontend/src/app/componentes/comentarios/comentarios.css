@@ -411,30 +411,6 @@
 }
 
 /* =========================================
-   MODO INTEGRADO DENTRO DEL FEED
-========================================= */
-
-.pagina-comentarios.modo-integrado {
-    min-height: 0;
-    background: transparent;
-}
-
-.modo-integrado .contenedor-comentarios {
-    width: 100%;
-    max-width: 100%;
-    margin: 0;
-    padding: 0;
-}
-
-.modo-integrado .seccion-comentarios {
-    margin-top: 12px;
-    padding: 20px;
-    border-radius: 14px;
-    background-color: #FAF9FF;
-    box-shadow: none;
-}
-
-/* =========================================
    RESPONSIVE - TABLETS
 ========================================= */
 
@@ -459,10 +435,6 @@
     .encabezado-comentarios {
         padding: 14px 16px;
     }
-
-    .modo-integrado .seccion-comentarios {
-        padding: 16px;
-    }
 }
 
 /* =========================================
@@ -478,11 +450,6 @@
     .seccion-comentarios {
         padding: 14px;
         border-radius: 12px;
-    }
-
-    .modo-integrado .seccion-comentarios {
-        padding: 12px;
-        margin-top: 10px;
     }
 
     .seccion-comentarios h3 {

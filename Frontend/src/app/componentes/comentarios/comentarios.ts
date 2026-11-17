@@ -1,4 +1,4 @@
-import {Component, OnInit, OnChanges, SimpleChanges, Input, ChangeDetectorRef} from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -13,11 +13,9 @@ import { PublicacionesService } from '../../services/publicaciones';
     templateUrl: './comentarios.html',
     styleUrls: ['./comentarios.css']
 })
-export class Comentarios implements OnInit, OnChanges {
+export class Comentarios implements OnInit {
 
-    @Input() idPublicacion = '';
-
-    @Input() modoIntegrado = false;
+    idPublicacion = '';
 
     idUsuarioActual = '';
 
@@ -50,46 +48,26 @@ export class Comentarios implements OnInit, OnChanges {
         private cdr: ChangeDetectorRef
     ) {}
 
+
     ngOnInit(): void {
         const usuario = this.authService.usuarioActual;
 
         this.idUsuarioActual = String(
-        usuario?._id || usuario?.id || usuario?.sub || ''
+            usuario?._id || usuario?.id || usuario?.sub || ''
         );
 
-        if (!this.modoIntegrado && !this.idPublicacion) {
         this.idPublicacion =
             this.route.snapshot.paramMap.get('id') || '';
-        }
 
         if (!this.idPublicacion) {
-        this.mensajeError = 'No se encontró la publicación.';
-        return;
+            this.mensajeError = 'No se encontró la publicación.';
+            return;
         }
 
-        if (!this.modoIntegrado) {
         this.cargarPublicacion();
-        }
-
         this.recargarComentarios();
     }
-
-    ngOnChanges(changes: SimpleChanges): void {
-        if (
-        changes['idPublicacion'] &&
-        !changes['idPublicacion'].firstChange &&
-        this.idPublicacion
-        ) {
-        this.publicacion = null;
-
-        if (!this.modoIntegrado) {
-            this.cargarPublicacion();
-        }
-
-        this.recargarComentarios();
-        }
-    }
-
+    
     cargarPublicacion(): void {
         this.cargandoPublicacion = true;
 

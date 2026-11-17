@@ -4,7 +4,6 @@ import { ReactiveFormsModule, FormControl, FormGroup, Validators } from '@angula
 import { Auth } from '../../services/auth';
 import { Router } from '@angular/router';
 import { PublicacionesService } from '../../services/publicaciones';
-import { Comentarios } from '../comentarios/comentarios';
 import { TiempoTranscurridoPipe } from '../../pipes/tiempo-transcurrido.pipe';
 import { ResumenTextoPipe } from '../../pipes/resumen-texto.pipe';
 import { FormatoNombrePipe } from '../../pipes/formato-nombre.pipe';
@@ -29,7 +28,7 @@ export interface Publicacion {
 @Component({
   selector: 'app-publicaciones',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, Comentarios, TiempoTranscurridoPipe, ResumenTextoPipe, FormatoNombrePipe, ResaltarPublicacionDirective, AutoFocusDirective, ResaltarInvalidoDirective],
+  imports: [CommonModule, ReactiveFormsModule, TiempoTranscurridoPipe, ResumenTextoPipe, FormatoNombrePipe, ResaltarPublicacionDirective, AutoFocusDirective, ResaltarInvalidoDirective],
   templateUrl: './publicaciones.html',
   styleUrls: ['./publicaciones.css']
 })
@@ -47,8 +46,6 @@ export class Publicaciones implements OnInit {
 
   limite: number = 10;
   offset: number = 0;
-
-  publicacionComentariosAbierta: string | null = null;
 
   mostrarModalError: boolean = false;
   mensajeErrorModal: string = '';
@@ -175,7 +172,6 @@ export class Publicaciones implements OnInit {
 
       this.criterioOrden = seleccion;
       this.paginaActual = 1;
-      this.publicacionComentariosAbierta = null;
       this.cargarPublicaciones();
   }
 
@@ -199,7 +195,6 @@ export class Publicaciones implements OnInit {
   cambiarPagina(nuevaPagina: number): void {
     if (nuevaPagina >= 1 && nuevaPagina <= this.totalPaginas) {
       this.paginaActual = nuevaPagina;
-      this.publicacionComentariosAbierta = null;
       this.cargarPublicaciones();
     }
   }
@@ -289,7 +284,6 @@ export class Publicaciones implements OnInit {
         this.archivoSeleccionado = null;
 
         this.paginaActual = 1;
-        this.publicacionComentariosAbierta = null;
         this.cargarPublicaciones();
 
         this.cdr.detectChanges();
@@ -351,14 +345,6 @@ export class Publicaciones implements OnInit {
     });
   }
 
-  alternarComentarios(idPublicacion: string): void {
-    if (this.publicacionComentariosAbierta === idPublicacion) {
-      this.publicacionComentariosAbierta = null;
-    } else {
-      this.publicacionComentariosAbierta = idPublicacion;
-    }
-  }
-
   irAComentarios(idPublicacion: string): void {
     this.router.navigate([
       '/publicaciones',
@@ -387,8 +373,6 @@ export class Publicaciones implements OnInit {
         this.publicaciones = this.publicaciones.filter(
           p => p.id !== this.idPublicacionAEliminar
         );
-
-        this.publicacionComentariosAbierta = null;
         this.cancelarEliminacion();
         this.cdr.detectChanges();
       },
