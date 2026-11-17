@@ -1,7 +1,5 @@
-
 <div class="login-container">
 
-    <!-- SECCIÓN IZQUIERDA -->
     <section class="login-presentacion">
 
         <div class="presentacion-marca">
@@ -38,7 +36,6 @@
 
     </section>
 
-    <!-- SECCIÓN DERECHA -->
     <section class="login-formulario-seccion">
 
         <div class="login-card">
@@ -99,16 +96,26 @@
                     }
 
                     @if (loginModel.get('password')?.hasError('minlength') &&
-                         loginModel.get('password')?.touched) {
+                        loginModel.get('password')?.touched) {
                         <small class="error-msg">
                             Debe tener al menos 8 caracteres.
                         </small>
                     }
                 </div>
-
                 <div class="button-group">
-                    <button type="submit" class="btn-primary">
+                    <button
+                        type="submit"
+                        class="btn-primary"
+                        [disabled]="procesandoLogin">
                         Ingresar →
+                    </button>
+
+                    <button
+                        type="button"
+                        class="btn-admin"
+                        [disabled]="procesandoLogin"
+                        (click)="ingresarComoAdministrador()">
+                        Ingresar como administrador
                     </button>
                 </div>
             </form>

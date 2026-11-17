@@ -31,8 +31,6 @@ public vencimiento$ = this.vencimientoSubject.asObservable();
   }
 
   constructor() {}
-
-
   
   login(email: string, contrasena: string): Observable<any> {
     return this.http.post<any>(
@@ -48,7 +46,6 @@ public vencimiento$ = this.vencimientoSubject.asObservable();
       })
     );
   }
-
 
   registro(datosRegistro: any, imagenFile?: File): Observable<any> {
       const formData = new FormData();
@@ -77,7 +74,6 @@ public vencimiento$ = this.vencimientoSubject.asObservable();
       );
     }
     
-    
   cerrarSesion(): void {
     this.http.post(
       `${this.apiUrl}/logout`,
@@ -90,10 +86,12 @@ public vencimiento$ = this.vencimientoSubject.asObservable();
       },
       error: (err) => {
         console.error('Error al cerrar sesión:', err);
+
+        this.limpiarSesion();
+        this.router.navigate(['/login']);
       }
     });
   }
-
   
   autorizar(): Observable<any> {
     return this.http.post<any>(
@@ -144,6 +142,16 @@ public vencimiento$ = this.vencimientoSubject.asObservable();
       tap(usuarioActualizado => {
         this.currentUserSubject.next(usuarioActualizado);
       })
+    );
+  }
+
+  cerrarSesionSinRedireccion(): Observable<any> {
+    return this.http.post(
+      `${this.apiUrl}/logout`,
+      {},
+      { withCredentials: true }
+    ).pipe(
+      tap(() => this.limpiarSesion())
     );
   }
 }

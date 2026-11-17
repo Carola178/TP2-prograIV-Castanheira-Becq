@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration } from 'chart.js';
@@ -11,8 +11,8 @@ import { EstadisticasService } from '../../services/estadisticas';
     imports: [FormsModule, BaseChartDirective],
     templateUrl: './estadisticas.html',
     styleUrl: './estadisticas.css'
-    })
-    export class Estadisticas{
+})
+export class Estadisticas implements OnInit {
 
     private estadisticasService = inject(EstadisticasService);
 
@@ -23,30 +23,52 @@ import { EstadisticasService } from '../../services/estadisticas';
     error = signal('');
     busquedaRealizada = signal(false);
 
+    periodoVisualizado = signal('Todo el historial');
+
     graficoUsuarios: ChartConfiguration<'bar'>['data'] = {
         labels: [],
         datasets: [{
-        label: 'Publicaciones',
-        data: [],
-        backgroundColor: '#8875D9'
+            label: 'Publicaciones',
+            data: [],
+            backgroundColor: '#8875D9'
         }]
     };
 
-    graficoComentarios: ChartConfiguration<'bar'>['data'] = {
+
+    graficoComentarios: ChartConfiguration<'line'>['data'] = {
         labels: [],
         datasets: [{
-        label: 'Comentarios',
-        data: [],
-        backgroundColor: '#64B5F6'
+            label: 'Comentarios',
+            data: [],
+            borderColor: '#64B5F6',
+            backgroundColor: '#64B5F6',
+            borderWidth: 3,
+            tension: 0,
+            fill: false,
+            pointRadius: 6,
+            pointHoverRadius: 8,
+            pointBackgroundColor: '#64B5F6',
+            pointBorderColor: '#FFFFFF',
+            pointBorderWidth: 2
         }]
     };
 
-    graficoPublicaciones: ChartConfiguration<'bar'>['data'] = {
+
+    graficoPublicaciones: ChartConfiguration<'doughnut'>['data'] = {
         labels: [],
         datasets: [{
-        label: 'Comentarios',
-        data: [],
-        backgroundColor: '#81C784'
+            label: 'Comentarios',
+            data: [],
+            backgroundColor: [
+                '#8875D9',
+                '#64B5F6',
+                '#81C784',
+                '#FFB74D',
+                '#F48FB1',
+                '#4DB6AC'
+            ],
+            borderWidth: 2,
+            borderColor: '#FFFFFF'
         }]
     };
 
@@ -75,18 +97,37 @@ import { EstadisticasService } from '../../services/estadisticas';
         }
     };
 
-    cargarEstadisticas(): void {
-        this.busquedaRealizada.set(false);
+    opcionesLineas: ChartConfiguration<'line'>['options'] = {
+        responsive: true,
+        maintainAspectRatio: false,
+        animation: false,
+        scales: {
+            y: {
+                beginAtZero: true,
+                ticks: {
+                    precision: 0
+                }
+            }
+        }
+    };
 
-        if (!this.desde || !this.hasta || this.desde > this.hasta) {
+    ngOnInit(): void {
+        this.cargarEstadisticas();
+    }
+
+    cargarEstadisticas(): void {
+
+        if (
+            (this.desde && !this.hasta) ||
+            (!this.desde && this.hasta) ||
+            (this.desde && this.hasta && this.desde > this.hasta)
+        ) {
             this.error.set('Seleccioná un rango de fechas válido.');
             return;
         }
 
         this.cargando.set(true);
         this.error.set('');
-
-        console.time('Carga de estadísticas');
 
         forkJoin({
             usuarios: this.estadisticasService.publicacionesPorUsuario(
@@ -98,9 +139,9 @@ import { EstadisticasService } from '../../services/estadisticas';
             publicaciones: this.estadisticasService.comentariosPorPublicacion(
                 this.desde, this.hasta
             )
-            
         }).subscribe({
             next: (respuesta) => {
+
                 this.graficoUsuarios = {
                     labels: respuesta.usuarios.map(d => d.usuario),
                     datasets: [{
@@ -115,22 +156,49 @@ import { EstadisticasService } from '../../services/estadisticas';
                     datasets: [{
                         label: 'Comentarios',
                         data: respuesta.comentarios.map(d => d.cantidad),
-                        backgroundColor: '#64B5F6'
+                        borderColor: '#64B5F6',
+                        backgroundColor: '#64B5F6',
+                        borderWidth: 3,
+                        tension: 0,
+                        fill: false,
+                        pointRadius: 6,
+                        pointHoverRadius: 8,
+                        pointBackgroundColor: '#64B5F6',
+                        pointBorderColor: '#FFFFFF',
+                        pointBorderWidth: 2
                     }]
                 };
 
                 this.graficoPublicaciones = {
-                    labels: respuesta.publicaciones.map(d => d.titulo),
-                    datasets: [{
-                        label: 'Comentarios',
-                        data: respuesta.publicaciones.map(d => d.cantidad),
-                        backgroundColor: '#81C784'
-                    }]
-                };
+                labels: respuesta.publicaciones.map(d => d.titulo),
+                datasets: [{
+                    label: 'Comentarios',
+                    data: respuesta.publicaciones.map(d => d.cantidad),
+                    backgroundColor: respuesta.publicaciones.map((_, indice) =>
+                        [
+                            '#8875D9',
+                            '#64B5F6',
+                            '#81C784',
+                            '#FFB74D',
+                            '#F48FB1',
+                            '#4DB6AC'
+                        ][indice % 6]
+                    ),
+                    borderWidth: 2,
+                    borderColor: '#FFFFFF'
+                }]
+            };
+
+                this.periodoVisualizado.set(
+                    this.desde && this.hasta
+                        ? `${this.desde} al ${this.hasta}`
+                        : 'Todo el historial'
+                );
 
                 this.busquedaRealizada.set(true);
                 this.cargando.set(false);
             },
+
             error: (err) => {
                 console.error('Error al cargar estadísticas:', err);
                 this.error.set('No se pudieron cargar las estadísticas.');
@@ -139,4 +207,9 @@ import { EstadisticasService } from '../../services/estadisticas';
         });
     }
 
+    mostrarTodo(): void {
+        this.desde = '';
+        this.hasta = '';
+        this.cargarEstadisticas();
+    }
 }

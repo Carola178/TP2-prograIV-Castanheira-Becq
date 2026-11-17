@@ -21,59 +21,64 @@ export interface ComentariosPorPublicacion {
 
 @Injectable({
     providedIn: 'root'
-    })
-    export class EstadisticasService {
+})
+export class EstadisticasService {
 
     private http = inject(HttpClient);
 
     private apiUrl = `${environment.apiUrl}/publicaciones/estadisticas`;
 
-    private obtenerParametros(desde: string, hasta: string): HttpParams {
-        return new HttpParams()
-        .set('desde', desde)
-        .set('hasta', hasta);
+    private obtenerParametros(desde?: string, hasta?: string): HttpParams {
+        let params = new HttpParams();
+
+        if (desde && hasta) {
+            params = params
+                .set('desde', desde)
+                .set('hasta', hasta);
+        }
+
+        return params;
     }
 
     publicacionesPorUsuario(
-        desde: string,
-        hasta: string
+        desde?: string,
+        hasta?: string
     ): Observable<PublicacionesPorUsuario[]> {
 
         return this.http.get<PublicacionesPorUsuario[]>(
-        `${this.apiUrl}/usuarios`,
-        {
-            params: this.obtenerParametros(desde, hasta),
-            withCredentials: true
-        }
+            `${this.apiUrl}/usuarios`,
+            {
+                params: this.obtenerParametros(desde, hasta),
+                withCredentials: true
+            }
         );
     }
 
     comentariosPorFecha(
-        desde: string,
-        hasta: string
+        desde?: string,
+        hasta?: string
     ): Observable<ComentariosPorFecha[]> {
 
         return this.http.get<ComentariosPorFecha[]>(
-        `${this.apiUrl}/comentarios`,
-        {
-            params: this.obtenerParametros(desde, hasta),
-            withCredentials: true
-        }
+            `${this.apiUrl}/comentarios`,
+            {
+                params: this.obtenerParametros(desde, hasta),
+                withCredentials: true
+            }
         );
     }
 
-    // 3. Comentarios por publicación
     comentariosPorPublicacion(
-        desde: string,
-        hasta: string
+        desde?: string,
+        hasta?: string
     ): Observable<ComentariosPorPublicacion[]> {
 
         return this.http.get<ComentariosPorPublicacion[]>(
-        `${this.apiUrl}/publicaciones`,
-        {
-            params: this.obtenerParametros(desde, hasta),
-            withCredentials: true
-        }
+            `${this.apiUrl}/publicaciones`,
+            {
+                params: this.obtenerParametros(desde, hasta),
+                withCredentials: true
+            }
         );
     }
 }

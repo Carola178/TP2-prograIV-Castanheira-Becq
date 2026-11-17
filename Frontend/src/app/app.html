@@ -8,7 +8,6 @@
 
 <div [hidden]="cargandoSesion">
 
-
     <!-- NAVBAR COMPARTIDO -->
     @if (mostrarNavbar()) {
         <header class="barra-navegacion">
@@ -19,6 +18,7 @@
                     alt="Logo Patitas al refugio"
                     class="logo-app"
                 />
+
                 <span class="titulo-app">
                     Patitas al refugio
                 </span>
@@ -26,30 +26,52 @@
 
             <div class="menu-navegacion">
 
+                <!-- FEED -->
                 @if (rutaActual() === '/publicaciones') {
+
                     <a routerLink="/perfil" class="boton-perfil">
                         👤 Mi Perfil
                     </a>
+
+                    @if (authService.usuarioActual?.perfil === 'administrador') {
+                        <a routerLink="/admin-panel" class="boton-perfil">
+                            Panel de administración
+                        </a>
+                    }
                 }
 
+                <!-- PERFIL -->
                 @if (rutaActual() === '/perfil') {
                     <a routerLink="/publicaciones" class="boton-perfil">
                         🏠 Volver al feed
                     </a>
                 }
 
+                <!-- PANEL DE ADMINISTRACIÓN -->
                 @if (rutaActual() === '/admin-panel') {
+
+                    <a routerLink="/publicaciones" class="boton-perfil">
+                        🏠 Volver al feed
+                    </a>
+
                     <a routerLink="/estadisticas" class="boton-perfil">
                         Ver estadísticas
                     </a>
                 }
 
+                <!-- ESTADÍSTICAS -->
                 @if (rutaActual() === '/estadisticas') {
+
+                    <a routerLink="/publicaciones" class="boton-perfil">
+                        🏠 Volver al feed
+                    </a>
+
                     <a routerLink="/admin-panel" class="boton-perfil">
                         Volver a usuarios
                     </a>
                 }
 
+                <!-- CERRAR SESIÓN -->
                 <button
                     type="button"
                     class="boton-perfil btn-logout"
@@ -60,7 +82,6 @@
             </div>
         </header>
     }
-
 
     <!-- CONTENIDO DE CADA PÁGINA -->
     <router-outlet />

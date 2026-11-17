@@ -10,6 +10,18 @@ import { Response } from 'express';
 import { ConflictException, NotFoundException } from '@nestjs/common';
 import { ActualizarPerfilDto } from './dto/actualizar-usuario.dto.js';
 
+
+const SEGUNDOS_POR_MINUTO = 60;
+const MILISEGUNDOS_POR_SEGUNDO = 1000;
+
+const DURACION_SESION_MINUTOS = 15;
+// const DURACION_SESION_MINUTOS = 1;
+const DURACION_SESION_SEGUNDOS =
+    DURACION_SESION_MINUTOS * SEGUNDOS_POR_MINUTO;
+
+const DURACION_SESION_MS =
+    DURACION_SESION_SEGUNDOS * MILISEGUNDOS_POR_SEGUNDO;
+
 @Injectable()
 export class AutenticacionService {
     constructor(
@@ -86,27 +98,20 @@ export class AutenticacionService {
         return user;
     }
 
-    
     async generateToken(usuario: UsuarioDocument) {
         const payload = {
             email: usuario.email,
             sub: usuario._id.toString(),
             perfil: usuario.perfil
         };
-
         const token = await this.jwtService.signAsync(payload, {
-            expiresIn: '15m'
-            // expiresIn: '1m'
+            expiresIn: DURACION_SESION_SEGUNDOS
         });
-
         const tokenDecodificado = this.jwtService.decode(token) as {
             exp: number;
         };
-
         const expiraEn = tokenDecodificado.exp * 1000;
-
         const { contrasena, ...usuarioSeguro } = usuario.toObject();
-
         return {
             token,
             usuario: usuarioSeguro,
@@ -121,8 +126,7 @@ export class AutenticacionService {
             httpOnly: true,
             secure: esProduccion,
             sameSite: esProduccion ? 'none' : 'lax',
-            maxAge: 1000 * 60 * 15,
-            // maxAge: 1000 * 60,
+            maxAge: DURACION_SESION_MS,
             path: '/',
         });
     }
@@ -145,13 +149,25 @@ export class AutenticacionService {
                 'Usuario inexistente o cuenta deshabilitada'
             );
         }
-        const token = await this.jwtService.signAsync({
-            sub: usuario._id.toString(),
-            perfil: usuario.perfil
-        });
+
+        const token = await this.jwtService.signAsync(
+            {
+                sub: usuario._id.toString(),
+                perfil: usuario.perfil
+            },
+            {
+                expiresIn: DURACION_SESION_SEGUNDOS
+            }
+        );
+
+        const tokenDecodificado = this.jwtService.decode(token) as {
+            exp: number;
+        };
+
+        const expiraEn = tokenDecodificado.exp * 1000;
+
         const { contrasena, ...usuarioSeguro } = usuario.toObject();
-        const expiraEn = Date.now() + 15 * 60 * 1000;
-        // const expiraEn = Date.now() + 60 * 1000;
+
         return {
             token,
             usuario: usuarioSeguro,

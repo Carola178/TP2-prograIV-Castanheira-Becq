@@ -97,9 +97,7 @@ export class AutenticacionController {
         };
     }
 
-
     @Post('logout')
-    @UseGuards(AuthGuard)
     cerrarSesion(@Res({ passthrough: true }) res: Response) {
         const esProduccion = process.env.NODE_ENV === 'production';
 
@@ -114,7 +112,6 @@ export class AutenticacionController {
             mensaje: 'Sesión cerrada correctamente'
         };
     }
-
 
     @Patch('perfil')
     @UseGuards(AuthGuard)

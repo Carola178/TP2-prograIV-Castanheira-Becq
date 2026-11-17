@@ -22,13 +22,19 @@ export class App implements OnInit, OnDestroy {
   mostrarNavbar = signal(false);
 
   private temporizadorAviso?: ReturnType<typeof setTimeout>;
-  private temporizadorVencimiento?: ReturnType<typeof setTimeout>;
 
   private suscripcionVencimiento?: Subscription;
   private suscripcionRutas?: Subscription;
 
-  private readonly tiempoRestanteAviso = 5 * 60 * 1000;
-  // private readonly tiempoRestanteAviso = 30 * 1000;
+  private readonly MINUTOS_ANTES_DEL_VENCIMIENTO = 5;
+  private readonly MILISEGUNDOS_POR_MINUTO = 60_000;
+
+  // private readonly MINUTOS_ANTES_DEL_VENCIMIENTO = 0.1;
+  // private readonly MILISEGUNDOS_POR_MINUTO = 60_000;
+
+  private readonly tiempoRestanteAviso =
+    this.MINUTOS_ANTES_DEL_VENCIMIENTO *
+    this.MILISEGUNDOS_POR_MINUTO;
 
   constructor(
     private authService: Auth,
@@ -108,9 +114,9 @@ export class App implements OnInit, OnDestroy {
     const tiempoHastaVencimiento =
       expiraEn - ahora;
     if (tiempoHastaVencimiento <= 0) {
-      this.finalizarSesion();
       return;
     }
+
     if (tiempoHastaAviso > 0) {
       this.temporizadorAviso = setTimeout(() => {
         this.mostrarModalSesion = true;
@@ -120,9 +126,6 @@ export class App implements OnInit, OnDestroy {
       this.mostrarModalSesion = true;
       this.cdr.detectChanges();
     }
-    this.temporizadorVencimiento = setTimeout(() => {
-      this.finalizarSesion();
-    }, tiempoHastaVencimiento);
   }
 
 
@@ -131,10 +134,7 @@ export class App implements OnInit, OnDestroy {
       clearTimeout(this.temporizadorAviso);
       this.temporizadorAviso = undefined;
     }
-    if (this.temporizadorVencimiento) {
-      clearTimeout(this.temporizadorVencimiento);
-      this.temporizadorVencimiento = undefined;
-    }
+
     this.mostrarModalSesion = false;
   }
 
@@ -145,7 +145,7 @@ export class App implements OnInit, OnDestroy {
 
   cancelarRenovacion(): void {
     this.detenerTemporizador();
-    this.authService.cerrarSesion();
+    this.cdr.detectChanges();
   }
 
   extenderSesion(): void {
@@ -168,8 +168,7 @@ export class App implements OnInit, OnDestroy {
     this.router.navigate(['/login']);
     this.cdr.detectChanges();
   }
-
-
+  
   ngOnDestroy(): void {
 
     this.detenerTemporizador();

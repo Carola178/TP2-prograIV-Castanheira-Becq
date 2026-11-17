@@ -345,6 +345,31 @@
     font-size: 0.8rem;
 }
 
+/* ACCESO ADMINISTRADOR */
+
+.btn-admin {
+    display: block;
+    margin: 18px auto 0;
+    padding: 0;
+    background: transparent;
+    border: none;
+    color: var(--primary-color);
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.btn-admin:hover {
+    color: var(--primary-hover);
+    text-decoration: underline;
+}
+
+.btn-admin:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
 @keyframes aparecerModal {
     from {
         opacity: 0;
