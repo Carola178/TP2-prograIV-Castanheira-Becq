@@ -60,10 +60,11 @@
                         type="text"
                         id="email"
                         formControlName="email"
+                        autocomplete="username"
                         placeholder="Tu usuario o correo">
 
                     @if (loginModel.get('email')?.hasError('required') &&
-                         loginModel.get('email')?.touched) {
+                        loginModel.get('email')?.touched) {
                         <small class="error-msg">
                             El correo o usuario es obligatorio.
                         </small>
@@ -78,6 +79,7 @@
                             [type]="verContrasena ? 'text' : 'password'"
                             id="password"
                             formControlName="password"
+                            autocomplete="password"
                             placeholder="Ingresá tu contraseña">
 
                         <button
@@ -89,7 +91,7 @@
                     </div>
 
                     @if (loginModel.get('password')?.hasError('required') &&
-                         loginModel.get('password')?.touched) {
+                        loginModel.get('password')?.touched) {
                         <small class="error-msg">
                             La contraseña es obligatoria.
                         </small>
